@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "Quản lý phòng ban";
+}
+<div class="d-flex mb-1 justify-content-between">
+    <h1 class="h3 mb-3">Quản lý phòng ban</h1>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sizedModalMd">+ Tạo mới</button>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table id="data-table" class="table table-striped" style="width:100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sizedModalMd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới nhân viên</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="form-group">
+                    <label class="form-label" for="code">Mã nhân viên:</label>
+                    <input id="code" class="form-control" type="text" name="code" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="name">Tên nhân viên:</label>
+                    <input id="name" class="form-control" type="text" name="name" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="postion">Chức vụ:</label>
+                    <select class="form-control select2" id="postion" data-toggle="select2">
+                        <option value="">--Chọn chức vụ--</option>
+                        @if (ViewBag.lstPositions != null)
+                        {
+                            foreach (var item in ViewBag.lstPositions)
+                            {
+                                <option value="@item.Code">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="department">Phòng ban:</label>
+                    <select class="form-control select2" id="department" data-toggle="select2">
+                        <option value="">--Chọn phòng ban--</option>
+                        @if (ViewBag.lstDepartments != null)
+                        {
+                            foreach (var item in ViewBag.lstDepartments)
+                            {
+                                <option value="@item.DepartmentCode">@item.DepartmentName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="account">Tài khoản:</label>
+                    <input id="account" class="form-control" type="text" name="account" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Mật khẩu:</label>
+                    <input id="password" class="form-control" type="text" name="password" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Nhóm quyền:</label>
+                    <select class="form-control select2" id="role" data-toggle="select2">
+                        <option value="">--Chọn nhóm quyền--</option>
+                        @if (ViewBag.lstRoles != null)
+                        {
+                            foreach (var item in ViewBag.lstRoles)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trạng thái:</label>
+                    <select class="form-control select2" id="status" data-toggle="select2">
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Ngưng hoạt động</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_AddUser()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalUpdateUser" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa nhân viên</h5>
+                <button onclick="js_closeModalUpdate()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <input hidden id="user_id">
+                <div class="form-group">
+                    <label class="form-label" for="code_u">Mã nhân viên:</label>
+                    <input id="code_u" class="form-control" type="text" name="code_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="name_u">Tên nhân viên:</label>
+                    <input id="name_u" class="form-control" type="text" name="name_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="postion_u">Chức vụ:</label>
+                    <select class="form-control select2" id="postion_u" data-toggle="select2">
+                        <option value="">--Chọn chức vụ--</option>
+                        @if (ViewBag.lstPositions != null)
+                        {
+                            foreach (var item in ViewBag.lstPositions)
+                            {
+                                <option value="@item.Code">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="department_u">Phòng ban:</label>
+                    <select class="form-control select2" id="department_u" data-toggle="select2">
+                        <option value="">--Chọn phòng ban--</option>
+                        @if (ViewBag.lstDepartments != null)
+                        {
+                            foreach (var item in ViewBag.lstDepartments)
+                            {
+                                <option value="@item.DepartmentCode">@item.DepartmentName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="account_u">Tài khoản:</label>
+                    <input id="account_u" class="form-control" type="text" name="account_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Nhóm quyền:</label>
+                    <select class="form-control select2" id="role_u" data-toggle="select2">
+                        <option value="">--Chọn nhóm quyền--</option>
+                        @if (ViewBag.lstRoles != null)
+                        {
+                            foreach (var item in ViewBag.lstRoles)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trạng thái:</label>
+                    <select class="form-control select2" id="status_u" data-toggle="select2">
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Ngưng hoạt động</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="js_closeModalUpdate()" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_UpdateUser()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/User.js"></script>
+
+
