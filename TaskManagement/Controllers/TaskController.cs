@@ -4,15 +4,16 @@ using System.Data;
 using TaskManagement.Helper;
 using TaskManagement.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Task = TaskManagement.Models.Task;
 
 namespace TaskManagement.Controllers
 {
-	public class DepartmentController : Controller
+	public class TaskController : Controller
 	{
 		private readonly TaskManagementContext _context;
 		private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public DepartmentController(TaskManagementContext context)
+		public TaskController(TaskManagementContext context)
 		{
 			this._context = context;
 		}
@@ -24,39 +25,48 @@ namespace TaskManagement.Controllers
             ViewBag.lstUsers = _context.Users.ToList();
             return View();
 		}
-		[HttpPost]
-		public JsonResult AddDepartment(IFormCollection model)
-		{
-			try
-			{
-				
-				if (model != null)
-				{
-					var department = new Department()
-					{
-						DepartmentCode = model["code"],
-						DepartmentName = model["name"],
-						Status = model["status"] == "1" ? true : false,
-                        Mannager = model["management"],
-						CreatedBy = Request.Cookies["user_code"],
-						CreatedDate = DateTime.Now,
-					};
-					_context.Add(department);
-					_context.SaveChanges();
-					return new JsonResult(new { status = true, message = "Thêm mới phòng ban thành công!" });
-				}
-				else
-				{
-					return new JsonResult(new { status = false, message = "Tạo mới phòng ban thất bại!" });
+        [HttpPost]
+        public JsonResult AddTask(IFormCollection model)
+        {
+            try
+            {
+                if (model != null)
+                {
+                    var TaskMaxId = _context.Tasks.Where(e => e.ProjectId == int.Parse(model["project_id"])).OrderByDescending(e => e.Id).FirstOrDefault();
+                    var task = new Task()
+                    {
+						ProjectId = int.Parse(model["project_id"]),
+                        TaskCode = model["task_code"] + TaskMaxId.ToString,
+                        TaskName = model["task_name"],
+                        StartTime = DateTime.Parse(model["start_date"]),
+                        EndTime = DateTime.Parse(model["end_date"]),
+						EstimateTime = Decimal.Parse(model["estimate_time"]),
+                        AssignedUser = model["assigned_user"],
+						Description = model["description"],
+                        Level = model["priority_level"],
+                        Points = int.Parse(model["point"]),
+                        Status = "NEW",
+                        ProcessPercent= 0,
+                        CreatedDate = DateTime.Now,
+                        CreatedBy = Request.Cookies["user_code"],
 
-				}
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new { status = false, message = "Error" + ex });
-			}
-		}
-		[HttpPost]
+                    };
+                    _context.Add(task);
+                    _context.SaveChanges();
+                    return new JsonResult(new { status = true, message = "Thêm mới dự án thành công!" });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Tạo mới dự án thất bại!" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
+        [HttpPost]
 		public JsonResult UpdateDepartment(IFormCollection model)
 		{
 			try

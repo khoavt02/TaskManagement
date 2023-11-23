@@ -1,20 +1,10 @@
 ﻿@{
-    ViewData["Title"] = "Quản lý phòng ban";
+    ViewData["Title"] = "Quản lý dự án";
 }
-<div class="d-flex mb-1 justify-content-between">
-    <h1 class="h3 mb-3">Quản lý phòng ban</h1>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sizedModalMd">+ Tạo mới</button>
-</div>
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <table id="data-table" class="table table-striped" style="width:100%">
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+<a href="#" class="btn btn-primary float-right mt-n1"><i class="fas fa-plus"></i> Tạo mới</a>
+<h1 class="h3 mb-3">Dự án</h1>
+
+@await Html.PartialAsync("./Partial/_ListProject.cshtml")
 
 <div class="modal fade" id="sizedModalMd" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
@@ -111,6 +101,6 @@
         </div>
     </div>
 </div>
-<script src="~/js/Department.js"></script>
+<script src="~/js/Project.js"></script>
 
 

@@ -7,12 +7,12 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskManagement.Controllers
 {
-	public class DepartmentController : Controller
+	public class ProjectCreateController : Controller
 	{
 		private readonly TaskManagementContext _context;
 		private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public DepartmentController(TaskManagementContext context)
+		public ProjectCreateController(TaskManagementContext context)
 		{
 			this._context = context;
 		}
@@ -24,30 +24,39 @@ namespace TaskManagement.Controllers
             ViewBag.lstUsers = _context.Users.ToList();
             return View();
 		}
+		
 		[HttpPost]
-		public JsonResult AddDepartment(IFormCollection model)
+		public JsonResult AddProject(IFormCollection model)
 		{
 			try
 			{
-				
-				if (model != null)
+                if (model != null)
 				{
-					var department = new Department()
+					var project = new Project()
 					{
-						DepartmentCode = model["code"],
-						DepartmentName = model["name"],
-						Status = model["status"] == "1" ? true : false,
-                        Mannager = model["management"],
-						CreatedBy = Request.Cookies["user_code"],
+                        ProjectCode = model["project_code"],
+						ProjectName = model["project_name"],
+						StartTime = DateTime.Parse(model["start_date"]),
+						EndTime = DateTime.Parse(model["end_date"]),
+						Manager = model["manager"],
+						Department = model["department"],
+						Description = model["project_description"],
+						PriorityLevel = model["priority_level"],
+						Point = int.Parse(model["point"]),
+						Users = model["users"],
+                        Status = "NEW",
+						Process = 0,
 						CreatedDate = DateTime.Now,
-					};
-					_context.Add(department);
+						CreatedBy = Request.Cookies["user_code"],
+
+                };
+					_context.Add(project);
 					_context.SaveChanges();
-					return new JsonResult(new { status = true, message = "Thêm mới phòng ban thành công!" });
+					return new JsonResult(new { status = true, message = "Thêm mới dự án thành công!" });
 				}
 				else
 				{
-					return new JsonResult(new { status = false, message = "Tạo mới phòng ban thất bại!" });
+					return new JsonResult(new { status = false, message = "Tạo mới dự án thất bại!" });
 
 				}
 			}

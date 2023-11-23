@@ -1,7 +1,7 @@
 ﻿$(function () {
     $('#menu-management').addClass("active");
     $('#menu-management-department').addClass("active");
-    js_GetList();
+    //js_GetList();
 });
 function js_closeModalUpdate() {
     $('#ModalUpdateDepartment').modal('hide');

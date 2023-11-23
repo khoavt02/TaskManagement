@@ -113,8 +113,11 @@ public partial class TaskManagementContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_date");
             entity.Property(e => e.Department)
-                .HasMaxLength(50)
+                .HasMaxLength(500)
                 .HasColumnName("department");
+            entity.Property(e => e.Users)
+               .HasMaxLength(1000)
+               .HasColumnName("users");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EndTime)
                 .HasColumnType("datetime")
@@ -220,6 +223,9 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.StartTime)
                 .HasColumnType("datetime")
                 .HasColumnName("start_time");
+            entity.Property(e => e.AssignedUser)
+                .HasMaxLength(50)
+                .HasColumnName("assigned_user");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasColumnName("status");
@@ -227,9 +233,10 @@ public partial class TaskManagementContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("task_code");
             entity.Property(e => e.TaskParent).HasColumnName("task_parent");
-            entity.Property(e => e.TastName)
+            entity.Property(e => e.TaskName)
                 .HasMaxLength(500)
-                .HasColumnName("tast_name");
+                .HasColumnName("task_name");
+            entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.UpdateBy)
                 .HasMaxLength(50)
                 .HasColumnName("update_by");

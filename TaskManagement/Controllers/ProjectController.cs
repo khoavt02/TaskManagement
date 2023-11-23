@@ -7,12 +7,12 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskManagement.Controllers
 {
-	public class DepartmentController : Controller
+	public class ProjectController : Controller
 	{
 		private readonly TaskManagementContext _context;
 		private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public DepartmentController(TaskManagementContext context)
+		public ProjectController(TaskManagementContext context)
 		{
 			this._context = context;
 		}
@@ -24,24 +24,40 @@ namespace TaskManagement.Controllers
             ViewBag.lstUsers = _context.Users.ToList();
             return View();
 		}
+		public IActionResult ProjectCreate()
+		{
+			ViewBag.lstPositions = _context.Positons.ToList();
+			ViewBag.lstDepartments = _context.Departments.ToList();
+			ViewBag.lstRoles = _context.RoleGroups.ToList();
+			ViewBag.lstUsers = _context.Users.ToList();
+			return View();
+		}
 		[HttpPost]
-		public JsonResult AddDepartment(IFormCollection model)
+		public JsonResult AddProject(IFormCollection model)
 		{
 			try
 			{
 				
 				if (model != null)
 				{
-					var department = new Department()
+					var project = new Project()
 					{
-						DepartmentCode = model["code"],
-						DepartmentName = model["name"],
-						Status = model["status"] == "1" ? true : false,
-                        Mannager = model["management"],
-						CreatedBy = Request.Cookies["user_code"],
+                        ProjectCode = model["code"],
+						ProjectName = model["name"],
+						StartTime = DateTime.Now,
+						EndTime = DateTime.Now,
+						Manager = model["manager"],
+						Department = model["department"],
+						Description = model["description"],
+						PriorityLevel = model["PriorityLevel"],
+						Point = int.Parse(model["point"]),
+						Status = model["status"],
+						Process = 0,
 						CreatedDate = DateTime.Now,
-					};
-					_context.Add(department);
+						CreatedBy = Request.Cookies["user_code"],
+
+                };
+					_context.Add(project);
 					_context.SaveChanges();
 					return new JsonResult(new { status = true, message = "Thêm mới phòng ban thành công!" });
 				}

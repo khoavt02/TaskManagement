@@ -9,12 +9,13 @@ public partial class Task
 
     public string? TaskCode { get; set; }
 
-    public string? TastName { get; set; }
+    public string? TaskName { get; set; }
+    public string? Description { get; set; }
 
     public int? TaskParent { get; set; }
 
     public int? ProjectId { get; set; }
-
+    public string? AssignedUser { get; set; }
     public string? Status { get; set; }
 
     public decimal? EstimateTime { get; set; }

@@ -18,6 +18,7 @@ public partial class Project
     public string? Manager { get; set; }
 
     public string? Department { get; set; }
+    public string? Users { get; set; }
 
     public string? Description { get; set; }
 

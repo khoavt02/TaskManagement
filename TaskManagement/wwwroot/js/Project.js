@@ -1,24 +1,39 @@
-﻿$(function () {
-    $('#menu-management').addClass("active");
-    $('#menu-management-department').addClass("active");
-    js_GetList();
+﻿
+$(function () {
+    $('#menu-job').addClass("active");
+    $('#menu-job-project').addClass("active");
+    $('.select2').select2();
 });
 function js_closeModalUpdate() {
     $('#ModalUpdateDepartment').modal('hide');
 }
-function js_AddDepartment() {
-    var name = $('#name').val();
-    var code = $('#code').val();
-    var management = $('#management').val();
-    var status = $('#status').val();
+function js_AddProject() {
+    var point = $('#point').val();
+    var priority_level = $('#priority_level').val();
+    var department = $('#department').val();
+    var manager = $('#manager').val();
+    var users = $('#users').val();
+    var end_date = $('#end_date').val();
+    var start_date = $('#start_date').val();
+    var project_description = $('#project_description').val();
+    var project_code = $('#project_code').val();
+    var project_name = $('#project_name').val();
+    console.log(start_date, end_date)
+   
     var formData = new FormData();
-    formData.append("name", name);
-    formData.append("code", code);
-    formData.append("management", management);
-    formData.append("status", status);
+    formData.append("point", point);
+    formData.append("priority_level", priority_level);
+    formData.append("department", department);
+    formData.append("manager", manager);
+    formData.append("users", users);
+    formData.append("end_date", end_date);
+    formData.append("start_date", start_date);
+    formData.append("project_description", project_description);
+    formData.append("project_code", project_code);
+    formData.append("project_name", project_name);
     $.ajax({
         type: 'POST',
-        url: "/Department/AddDepartment",
+        url: "/ProjectCreate/AddProject",
         contentType: false,
         processData: false,
         cache: false,
@@ -35,8 +50,8 @@ function js_AddDepartment() {
                     newestOnTop: true,
                     timeOut: 3000
                 });
-                $("#sizedModalMd").modal("hide");
-                js_GetList();
+                //$("#sizedModalMd").modal("hide");
+                //js_GetList();
             } else {
                 var message = rp.message;
                 var title = "";

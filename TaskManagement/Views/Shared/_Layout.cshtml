@@ -4,15 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TaskManagement</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/TaskManagement.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/bootstrap-table/bootstrap-table.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/font-awesome/fontawesome.min.css" rel="stylesheet" asp-append-version="true" />
-    <link rel="preconnect" href="//fonts.gstatic.com/" crossorigin="">
-
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/site.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/TaskManagement.styles.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap-table/bootstrap-table.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/lib/font-awesome/fontawesome.min.css")" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
     <!-- PICK ONE OF THE STYLES BELOW -->
-    <!-- <link href="css/classic.css" rel="stylesheet"> -->
+    <link href="@Url.Content("~/css/classic.css")" rel="stylesheet">
     <!-- <link href="css/corporate.css" rel="stylesheet"> -->
     <!-- <link href="css/modern.css" rel="stylesheet"> -->
     <!-- BEGIN SETTINGS -->
@@ -22,10 +21,13 @@
             opacity: 0;
         }
     </style>
-    <script src="~/js/settings.js"></script>
+    @* <script src="@Url.Content("~/js/settings.js")"></script> *@
     <!-- END SETTINGS -->
     <!-- Global site tag (gtag.js) - Google Analytics -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-120946860-6"></script>
+    <script src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
@@ -49,13 +51,22 @@
                             <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
                         </a>
                     </li>
+                    <li class="sidebar-item" id="menu-job">
+                        <a href="#pages" data-toggle="collapse" class="sidebar-link collapsed">
+                            <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Quản lý công việc</span>
+                        </a>
+                        <ul id="pages" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                            <li class="sidebar-item" id="menu-job-project"><a class="sidebar-link" href="/Project">Dự án </a></li>
+                            <li class="sidebar-item" id="menu-job-task"><a class="sidebar-link" href="/Task">Công việc</a></li>
+                        </ul>
+                    </li>
                     <li class="sidebar-item" id="menu-management">
                         <a href="#dashboards" data-toggle="collapse" class="sidebar-link collapsed">
-                            <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Quản lý</span>
+                            <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Quản lý cấu hình</span>
                         </a>
                         <ul id="dashboards" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
                             <li class="sidebar-item" id="menu-management-user"><a href="/User" class="sidebar-link">Quản lý người dùng </a></li>
-                            <li class="sidebar-item" id="menu-management-department"><a class="sidebar-link">Quản lý phòng ban</a></li>
+                            <li class="sidebar-item" id="menu-management-department"><a href="/Department" class="sidebar-link">Quản lý phòng ban</a></li>
                             <li class="sidebar-item" id="menu-management-role"><a class="sidebar-link">Quản lý quyền</a></li>
                             <li class="sidebar-item" id="menu-management-position"><a class="sidebar-link">Quản lý chức vụ</a></li>
                         </ul>
@@ -94,7 +105,7 @@
                                     <a href="#" class="list-group-item">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-2">
-                                                <img src="img\avatars\avatar-5.jpg" class="avatar img-fluid rounded-circle" alt="Ashley Briggs">
+                                                <img src="~/img/avatars/avatar-5.jpg" class="avatar img-fluid rounded-circle" alt="Ashley Briggs">
                                             </div>
                                             <div class="col-10 pl-2">
                                                 <div class="text-dark">Ashley Briggs</div>
@@ -106,7 +117,7 @@
                                     <a href="#" class="list-group-item">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-2">
-                                                <img src="img\avatars\avatar-2.jpg" class="avatar img-fluid rounded-circle" alt="Carl Jenkins">
+                                                <img src="~/img/avatars/avatar-2.jpg" class="avatar img-fluid rounded-circle" alt="Carl Jenkins">
                                             </div>
                                             <div class="col-10 pl-2">
                                                 <div class="text-dark">Carl Jenkins</div>
@@ -118,7 +129,7 @@
                                     <a href="#" class="list-group-item">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-2">
-                                                <img src="img\avatars\avatar-4.jpg" class="avatar img-fluid rounded-circle" alt="Stacie Hall">
+                                                <img src="~/img/avatars/avatar-4.jpg" class="avatar img-fluid rounded-circle" alt="Stacie Hall">
                                             </div>
                                             <div class="col-10 pl-2">
                                                 <div class="text-dark">Stacie Hall</div>
@@ -130,7 +141,7 @@
                                     <a href="#" class="list-group-item">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-2">
-                                                <img src="img\avatars\avatar-3.jpg" class="avatar img-fluid rounded-circle" alt="Bertha Martin">
+                                                <img src="~/img/avatars/avatar-3.jpg" class="avatar img-fluid rounded-circle" alt="Bertha Martin">
                                             </div>
                                             <div class="col-10 pl-2">
                                                 <div class="text-dark">Bertha Martin</div>
@@ -211,23 +222,23 @@
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-flag dropdown-toggle" href="#" id="languageDropdown" data-toggle="dropdown">
-                                <img src="img\flags\us.png" alt="English">
+                                <img src="~/img/flags/us.png" alt="English">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageDropdown">
                                 <a class="dropdown-item" href="#">
-                                    <img src="img\flags\us.png" alt="English" width="20" class="align-middle mr-1">
+                                    <img src="~/img/flags/us.png" alt="English" width="20" class="align-middle mr-1">
                                     <span class="align-middle">English</span>
                                 </a>
                                 <a class="dropdown-item" href="#">
-                                    <img src="img\flags\es.png" alt="Spanish" width="20" class="align-middle mr-1">
+                                    <img src="~/img/flags/es.png" alt="Spanish" width="20" class="align-middle mr-1">
                                     <span class="align-middle">Spanish</span>
                                 </a>
                                 <a class="dropdown-item" href="#">
-                                    <img src="img\flags\de.png" alt="German" width="20" class="align-middle mr-1">
+                                    <img src="~/img/flags/de.png" alt="German" width="20" class="align-middle mr-1">
                                     <span class="align-middle">German</span>
                                 </a>
                                 <a class="dropdown-item" href="#">
-                                    <img src="img\flags\nl.png" alt="Dutch" width="20" class="align-middle mr-1">
+                                    <img src="~/img/flags/nl.png" alt="Dutch" width="20" class="align-middle mr-1">
                                     <span class="align-middle">Dutch</span>
                                 </a>
                             </div>
@@ -238,7 +249,7 @@
                             </a>
 
                             <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-toggle="dropdown">
-                                <img src="img\avatars\avatar.jpg" class="avatar img-fluid rounded-circle mr-1" alt="Chris Wood"> <span class="text-dark">Admin</span>
+                                <img src="~/img/avatars/avatar.jpg" class="avatar img-fluid rounded-circle mr-1" alt="Chris Wood"> <span class="text-dark">Admin</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" href="pages-profile.html"><i class="align-middle mr-1" data-feather="user"></i> Thông tin</a>
@@ -260,43 +271,15 @@
                 </div>
             </main>
 
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row text-muted">
-                        <div class="col-6 text-left">
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="#">Support</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="#">Help Center</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="#">Privacy</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="#">Terms of Service</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-6 text-right">
-                            <p class="mb-0">
-                                &copy; 2023 - <a href="index.html" class="text-muted">Task Management</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </div>
 
     <script src="~/js/app.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/bootstrap-table/bootstrap-table.min.js" asp-append-version="true"></script>
-    <script src="~/lib/font-awesome/fontawesome.min.js" asp-append-version="true"></script>
-    <script src="~/lib/moment/min/moment.min.js" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/bootstrap-table/bootstrap-table.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/font-awesome/fontawesome.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/lib/moment/min/moment.min.js")" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
