@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Quản lý công việc";
+}
+<h1 class="h3 mb-3">Công việc</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thêm mới công việc</h5>
+            </div>
+            <div class="card-body">
+                <form id="validation-form">
+                    <div class="row">
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label" for="project">Thuộc dự án:</label>
+                                <select class="form-control select2" id="project" data-toggle="select2">
+                                    <option value="">--Chọn dự án--</option>
+                                    @if (ViewBag.lstProjects != null)
+                                    {
+                                        foreach (var item in ViewBag.lstProjects)
+                                        {
+                                            <option value="@item.Id">@item.ProjectName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label">Tên công việc</label>
+                                <input type="text" class="form-control" id="task_name" name="task_name" placeholder="Nhập tên công việc">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mô tả</label>
+                        <textarea rows="4" class="form-control" id="task_description" name="task_description" placeholder="Nhập mô tả chi tiết"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label">Thời gian bắt đẩu</label>
+                                <div class="input-group date">
+                                    <input type="date" id="start_date" class="form-control datetimepicker-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label">Thời gian kết thúc</label>
+                                <div class="input-group date">
+                                    <input type="date" id="end_date" class="form-control datetimepicker-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label" for="estimate_time">Thời gian thực hiện(h):</label>
+                                <input type="text" class="form-control" id="estimate_time" name="estimate_time" placeholder="Nhập thời gian ước lượng">
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label" for="department">Phòng ban thực hiện:</label>
+                                <select class="form-control select2" id="department" data-toggle="select2">
+                                    <option value="">--Chọn phòng ban--</option>
+                                    @if (ViewBag.lstDepartments != null)
+                                    {
+                                        foreach (var item in ViewBag.lstDepartments)
+                                        {
+                                            <option value="@item.DepartmentCode">@item.DepartmentName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="users">Nhân viên thực hiện:</label>
+                        <select class="form-control select2" id="users" data-toggle="select2" multiple="">
+                            <option value="">--Chọn nhân viên thực hiện--</option>
+                            @if (ViewBag.lstUsers != null)
+                            {
+                                foreach (var item in ViewBag.lstUsers)
+                                {
+                                    <option value="@item.UserCode">@item.UserName</option>
+                                }
+                            }
+                        </select>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label" for="priority_level">Mức độ quan trọng:</label>
+                                <select class="form-control select2" id="priority_level" data-toggle="select2">
+                                    <option value="">--Chọn mức độ--</option>
+                                    <option value="IMPORTANT">Quan trọng</option>
+                                    <option value="HIGH">Cao</option>
+                                    <option value="NORMAL">Bình thường</option>
+                                    <option value="LOW">Thấp</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                            <div class="form-group">
+                                <label class="form-label" for="department">Điểm số:</label>
+                                <input type="number" class="form-control" id="point" name="point" placeholder="Nhập điểm số">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="w-100">
+                            <button type="submit" onclick="js_AddTask()" class="btn btn-primary float-right">Tạo mới</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/Task.js"></script>
+
+

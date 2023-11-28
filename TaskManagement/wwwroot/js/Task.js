@@ -1,24 +1,40 @@
 ﻿$(function () {
     $('#menu-management').addClass("active");
     $('#menu-management-department').addClass("active");
+    $('.select2').select2();
     //js_GetList();
 });
 function js_closeModalUpdate() {
     $('#ModalUpdateDepartment').modal('hide');
 }
-function js_AddDepartment() {
-    var name = $('#name').val();
-    var code = $('#code').val();
-    var management = $('#management').val();
-    var status = $('#status').val();
+function js_AddTask() {
+    var point = $('#point').val();
+    var priority_level = $('#priority_level').val();
+    var department = $('#department').val();
+    var manager = $('#manager').val();
+    var users = $('#users').val();
+    var end_date = $('#end_date').val();
+    var start_date = $('#start_date').val();
+    var task_description = $('#task_description').val();
+    var estimate_time = $('#estimate_time').val();
+    var task_name = $('#task_name').val();
+    var project_id = $('#project').val();
+
     var formData = new FormData();
-    formData.append("name", name);
-    formData.append("code", code);
-    formData.append("management", management);
-    formData.append("status", status);
+    formData.append("point", point);
+    formData.append("priority_level", priority_level);
+    formData.append("department", department);
+    formData.append("manager", manager);
+    formData.append("assigned_user", users);
+    formData.append("end_date", end_date);
+    formData.append("start_date", start_date);
+    formData.append("task_description", task_description);
+    formData.append("estimate_time", estimate_time);
+    formData.append("task_name", task_name);
+    formData.append("project_id", project_id);
     $.ajax({
         type: 'POST',
-        url: "/Department/AddDepartment",
+        url: "/Task/AddTask",
         contentType: false,
         processData: false,
         cache: false,
@@ -35,8 +51,8 @@ function js_AddDepartment() {
                     newestOnTop: true,
                     timeOut: 3000
                 });
-                $("#sizedModalMd").modal("hide");
-                js_GetList();
+                //$("#sizedModalMd").modal("hide");
+                //js_GetList();
             } else {
                 var message = rp.message;
                 var title = "";
@@ -52,6 +68,69 @@ function js_AddDepartment() {
     })
 }
 
+function js_AddTaskChild() {
+    var point = $('#point').val();
+    var priority_level = $('#priority_level').val();
+    var department = $('#department').val();
+    var users = $('#users').val();
+    var end_date = $('#end_date').val();
+    var start_date = $('#start_date').val();
+    var task_description = $('#task_description').val();
+    var estimate_time = $('#estimate_time').val();
+    var task_name = $('#task_name').val();
+    var task_parent_code = $('#task_parent_code').val();
+    var project_id = $('#project_id').val();
+    var task_parent_id = $('#task_parent_id').val();
+    var task_parent_code = $('#task_parent_code').val();
+
+    var formData = new FormData();
+    formData.append("point", point);
+    formData.append("priority_level", priority_level);
+    formData.append("department", department);
+    formData.append("assigned_user", users);
+    formData.append("end_date", end_date);
+    formData.append("start_date", start_date);
+    formData.append("task_description", task_description);
+    formData.append("estimate_time", estimate_time);
+    formData.append("task_name", task_name);
+    formData.append("task_parent_id", task_parent_id);
+    formData.append("task_parent_code", task_parent_code);
+    formData.append("project_id", project_id);
+    $.ajax({
+        type: 'POST',
+        url: "/Task/AddTaskChild",
+        contentType: false,
+        processData: false,
+        cache: false,
+        data: formData,
+        success: function (rp) {
+            if (rp.status == true) {
+                console.log(rp.message)
+                var message = rp.message;
+                var title = "";
+                toastr["success"](message, title, {
+                    positionClass: 'toast-top-right',
+                    closeButton: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                    timeOut: 3000
+                });
+                //$("#sizedModalMd").modal("hide");
+                //js_GetList();
+            } else {
+                var message = rp.message;
+                var title = "";
+                toastr["error"](message, title, {
+                    positionClass: 'toast-top-right',
+                    closeButton: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                    timeOut: 3000
+                });
+            }
+        }
+    })
+}
 function js_GetList() {
     //$.ajax({
     //    url: '/User/GetListUser',
