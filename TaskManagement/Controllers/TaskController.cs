@@ -49,16 +49,7 @@ namespace TaskManagement.Controllers
             ViewBag.lstUsers = _context.Users.Where(user => assignedUserCodes.Contains(user.UserCode)).ToList();
             return View();
         }
-        public IActionResult TaskDetail(int id)
-        {
-            ViewBag.lstPositions = _context.Positons.ToList();
-            ViewBag.lstDepartments = _context.Departments.ToList();
-            ViewBag.lstRoles = _context.RoleGroups.ToList();
-            ViewBag.lstUsers = _context.Users.ToList();
-            ViewBag.lstProjects = _context.Projects.ToList();
-            Task taskDetail = _context.Tasks.Find(id);
-            return View();
-        }
+
         [HttpPost]
         public JsonResult AddTask(IFormCollection model)
         {
@@ -156,27 +147,44 @@ namespace TaskManagement.Controllers
             }
         }
         [HttpPost]
-        public JsonResult UpdateDepartment(IFormCollection model)
+        public JsonResult UpdateTask(IFormCollection model)
         {
             try
             {
-
                 if (model != null)
                 {
-                    var department = _context.Departments.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
-                    department.DepartmentCode = model["code"];
-                    department.DepartmentName = model["name"];
-                    department.Status = model["status"] == "1" ? true : false;
-                    department.Mannager = model["management"];
-                    department.UpdatedBy = Request.Cookies["user_code"];
-                    department.UpdatedDate = DateTime.Now;
-                    _context.Update(department);
+                    var TaskMaxId = _context.Tasks.Where(e => e.TaskParent == int.Parse(model["task_id"])).OrderByDescending(e => e.Id).FirstOrDefault();
+                    string id_task = "1";
+                    if (TaskMaxId != null)
+                    {
+                        id_task = TaskMaxId.Id.ToString();
+                    }
+                    var task = new Task()
+                    {
+                        ProjectId = int.Parse(model["project_id"]),
+                        TaskCode = model["task_parent_code"] + "/" + id_task,
+                        TaskName = model["task_name"],
+                        TaskParent = int.Parse(model["task_parent_id"]),
+                        StartTime = DateTime.Parse(model["start_date"]),
+                        EndTime = DateTime.Parse(model["end_date"]),
+                        EstimateTime = Decimal.Parse(model["estimate_time"]),
+                        AssignedUser = model["assigned_user"],
+                        Description = model["task_description"],
+                        Level = model["priority_level"],
+                        Points = int.Parse(model["point"]),
+                        Status = "NEW",
+                        ProcessPercent = 0,
+                        CreatedDate = DateTime.Now,
+                        CreatedBy = Request.Cookies["user_code"],
+
+                    };
+                    _context.Add(task);
                     _context.SaveChanges();
-                    return new JsonResult(new { status = true, message = "Cập nhật thành công!" });
+                    return new JsonResult(new { status = true, message = "Thêm mới công việc thành công!" });
                 }
                 else
                 {
-                    return new JsonResult(new { status = false, message = "Cập nhật thất bại!" });
+                    return new JsonResult(new { status = false, message = "Tạo mới công việc thất bại!" });
 
                 }
             }
@@ -194,20 +202,20 @@ namespace TaskManagement.Controllers
                 var users = _context.Users;
 
                 var query = departments
-    .GroupJoin(users, d => d.Mannager, u => u.UserCode, (d, u) => new { Department = d, ManagerUser = u })
-    .SelectMany(x => x.ManagerUser.DefaultIfEmpty(), (x, d) => new { x.Department, ManagerUser = d })
-    .GroupJoin(users, d => d.Department.CreatedBy, u => u.UserCode, (d, u) => new { d.Department, d.ManagerUser, CreatedUser = u })
-    .SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
-    {
-        Id = x.Department.Id,
-        DepartmentCode = x.Department.DepartmentCode,
-        DepartmentName = x.Department.DepartmentName,
-        CreatedDate = x.Department.CreatedDate,
-        Mannager = x.Department.Mannager,
-        Status = x.Department.Status,
-        Manager = x.ManagerUser != null ? x.ManagerUser.UserName : string.Empty,
-        CreatedName = user != null ? user.UserName : string.Empty,
-    });
+                            .GroupJoin(users, d => d.Mannager, u => u.UserCode, (d, u) => new { Department = d, ManagerUser = u })
+                            .SelectMany(x => x.ManagerUser.DefaultIfEmpty(), (x, d) => new { x.Department, ManagerUser = d })
+                            .GroupJoin(users, d => d.Department.CreatedBy, u => u.UserCode, (d, u) => new { d.Department, d.ManagerUser, CreatedUser = u })
+                            .SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
+                            {
+                                Id = x.Department.Id,
+                                DepartmentCode = x.Department.DepartmentCode,
+                                DepartmentName = x.Department.DepartmentName,
+                                CreatedDate = x.Department.CreatedDate,
+                                Mannager = x.Department.Mannager,
+                                Status = x.Department.Status,
+                                Manager = x.ManagerUser != null ? x.ManagerUser.UserName : string.Empty,
+                                CreatedName = user != null ? user.UserName : string.Empty,
+                            });
                 //List<User> lstUser = _context.Users.ToList();
                 var data = (from s in _context.Users select s);
                 var lstDepartment = query.Skip(offset).Take(limit).ToList();
@@ -247,5 +255,174 @@ namespace TaskManagement.Controllers
                 return new JsonResult(new { status = false, message = "Error" + ex });
             }
         }
+
+        #region TaskDetail
+        public IActionResult TaskDetail(int id)
+        {
+            ViewBag.lstPositions = _context.Positons.ToList();
+            ViewBag.lstDepartments = _context.Departments.ToList();
+            ViewBag.lstRoles = _context.RoleGroups.ToList();
+            ViewBag.lstUsers = _context.Users.ToList();
+            ViewBag.lstProjects = _context.Projects.ToList();
+            Task taskDetail = _context.Tasks.Find(id);
+            Project project = _context.Projects.Where(x => x.Id == taskDetail.ProjectId).FirstOrDefault();
+            ViewBag.projectName = project.ProjectName;
+            ViewBag.department = project.Department;
+
+            return View(taskDetail);
+        }
+
+        [HttpGet]
+        public JsonResult GetListProccessOfTask(int id, int offset, int limit)
+        {
+            try
+            {
+                var lstProcess = _context.TaskProgresses.Where(x => x.TaskId == id).ToList();
+
+                if (lstProcess.Count > 0)
+                {
+                    var users = _context.Users;
+                    var data = lstProcess
+                        .GroupJoin(users,
+                            process => process.CreatedBy,
+                            user => user.UserCode,
+                            (process, userGroup) => new { Process = process, Users = userGroup })
+                        .SelectMany(
+                            x => x.Users.DefaultIfEmpty(),
+                            (x, user) => new
+                            {
+                                ProcessId = x.Process.Id,
+                                ProcessName = x.Process.Description,
+                                CreatedName = user?.UserName,
+                                TaskId = x.Process.TaskId,
+                                ProjectId = x.Process.ProjectId,
+                                ProcessPercent = x.Process.ProcessPercent,
+                                Estimate = x.Process.Estimate,
+                                FileAttach = x.Process.FileAttach,
+                                Description = x.Process.Description,
+                                CreatedDate = x.Process.CreatedDate
+                            });
+
+                    return new JsonResult(new { status = true, rows = data, total = data.Count() });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Dữ liệu trống" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error: " + ex.Message });
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult AddProccessTask(IFormCollection model)
+        {
+            try
+            {
+                if (model != null)
+                {
+
+                    var taskProccess = new TaskProgress()
+                    {
+                        TaskId = int.Parse(model["id"]),
+                        ProjectId = int.Parse(model["project_id"]),
+                        ProcessPercent = decimal.Parse(model["proccess"]),
+                        Description = model["description"],
+                        Estimate = decimal.Parse(model["estimate"]),
+                        CreatedBy = Request.Cookies["user_code"],
+                        CreatedDate = DateTime.Now,
+                    };
+                    Task task = _context.Tasks.Where(x => x.Id == taskProccess.TaskId).FirstOrDefault();
+                    if (task != null)
+                    {
+                        task.ProcessPercent = taskProccess.ProcessPercent;
+                        if(task.Status == "NEW" && taskProccess.ProcessPercent < 100)
+                        {
+                            task.Status = "PROCESSING";
+                        }
+                        if (taskProccess.ProcessPercent == 100)
+                        {
+                            task.Status = "COMPLETE";
+                            task.CompleteTime = DateTime.Now;
+                        }
+                    }
+                    _context.Add(taskProccess);
+                    _context.Update(task);
+                    Task taskParent = _context.Tasks.Where(x => x.Id == task.TaskParent).FirstOrDefault();
+                    List<Task> lstTaskChild = _context.Tasks.Where(x => x.TaskParent == taskParent.Id).ToList();
+                    int countTaskChild = lstTaskChild.Count;
+                    decimal totalProcess = 0;
+                    if (countTaskChild > 0)
+                    {
+                        foreach (Task taskChild in lstTaskChild)
+                        {
+                            totalProcess = (decimal)(totalProcess + taskChild.ProcessPercent);
+                        }
+                    }
+                    taskParent.ProcessPercent = totalProcess/countTaskChild;
+                    if(taskParent.Status == "NEW")
+                    {
+                        taskParent.Status = "PROCESSING";
+                    }else if(taskParent.ProcessPercent == 100)
+                    {
+                        taskParent.Status = "COMPLETE";
+
+                    }
+                    _context.Update(taskParent);
+                    _context.SaveChanges();
+                    return new JsonResult(new { status = true, message = "Thêm mới tiến độ thành công!" });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Thêm mới tiến độ thất bại!" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
+        #endregion
+
+        #region Uploadfile
+        [HttpPost]
+        public JsonResult Upload(IFormFile file)
+        {
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                    if (!Directory.Exists(uploadPath))
+                    {
+                        Directory.CreateDirectory(uploadPath);
+                    }
+
+                    var fileName = Path.Combine(uploadPath, Path.GetRandomFileName());
+
+                    using (var fileStream = new FileStream(fileName, FileMode.Create))
+                    {
+                         file.CopyToAsync(fileStream);
+                    }
+
+                    return new JsonResult(new { status = true, message = "Thêm file thành công!" });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Thêm file thất bại!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+           
+
+        }
+        #endregion
     }
 }

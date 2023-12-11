@@ -33,6 +33,8 @@ public partial class TaskManagementContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Positions> Positons { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<HubConnection> HubConnections { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -60,7 +62,36 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
             entity.Property(e => e.TaskId).HasColumnName("task_id");
         });
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.ToTable("notification");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .HasColumnName("user_name");
+            entity.Property(e => e.NotificationDateTime)
+                .HasColumnType("datetime")
+                .HasColumnName("notification_date_time");
+            entity.Property(e => e.Message)
+                .HasMaxLength(1000)
+                .HasColumnName("message");
+            entity.Property(e => e.MessageType)
+                .HasMaxLength(50)
+                .HasColumnName("message_type");
+        });
 
+        modelBuilder.Entity<HubConnection>(entity =>
+        {
+            entity.ToTable("hub_connection");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ConnectionId)
+                .HasMaxLength(255)
+                .HasColumnName("connection_id");
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .HasColumnName("user_name");
+           
+        });
         modelBuilder.Entity<Department>(entity =>
         {
             entity.ToTable("department");
@@ -204,6 +235,9 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
                 .HasColumnName("created_date");
+            entity.Property(e => e.CompleteTime)
+                .HasColumnType("datetime")
+                .HasColumnName("complete_time");
             entity.Property(e => e.EndTime)
                 .HasColumnType("datetime")
                 .HasColumnName("end_time");

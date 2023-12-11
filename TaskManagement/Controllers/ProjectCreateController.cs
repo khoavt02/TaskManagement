@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Data;
+using System.Data.Common;
+using TableDependency.SqlClient.Base.Messages;
 using TaskManagement.Helper;
+using TaskManagement.Hubs;
 using TaskManagement.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -12,9 +16,12 @@ namespace TaskManagement.Controllers
 		private readonly TaskManagementContext _context;
 		private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public ProjectCreateController(TaskManagementContext context)
+        private readonly IHubContext<NotificationHub> _hubContext;
+        NotificationHub notificationHub;
+        public ProjectCreateController(TaskManagementContext context, NotificationHub notificationHub)
 		{
 			this._context = context;
+			this.notificationHub = notificationHub;
 		}
 		public IActionResult Index()
 		{
@@ -48,11 +55,12 @@ namespace TaskManagement.Controllers
 						Process = 0,
 						CreatedDate = DateTime.Now,
 						CreatedBy = Request.Cookies["user_code"],
-
-                };
-					_context.Add(project);
+                    };
+					// _hubContext.Clients.Client("admin").SendAsync("ReceivedPersonalNotification", "Bạn đã được thêm vào một dự án", "Admin");
+					//snotificationHub.SendNotificationToClient("Bạn đã được thêm vào một dự án", "admin");
+                    _context.Add(project);
 					_context.SaveChanges();
-					return new JsonResult(new { status = true, message = "Thêm mới dự án thành công!" });
+                    return new JsonResult(new { status = true, message = "Thêm mới dự án thành công!" });
 				}
 				else
 				{

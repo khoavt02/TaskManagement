@@ -29,6 +29,7 @@ public partial class Task
     public DateTime? StartTime { get; set; }
 
     public DateTime? EndTime { get; set; }
+    public DateTime? CompleteTime { get; set; }
 
     public DateTime? CreatedDate { get; set; }
 

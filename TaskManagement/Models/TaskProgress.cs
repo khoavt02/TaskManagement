@@ -12,6 +12,7 @@ public partial class TaskProgress
     public int? ProjectId { get; set; }
 
     public decimal? ProcessPercent { get; set; }
+    public decimal? Estimate { get; set; }
 
     public string? FileAttach { get; set; }
 

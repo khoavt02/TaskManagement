@@ -1,4 +1,18 @@
-﻿function js_Login() {
+﻿var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+connection.start().then(function () {
+    console.log('connected to hub');
+}).catch(function (err) {
+    return console.error(err.toString());
+});
+
+function OnConnected() {
+    var username = "admin";
+    connection.invoke("SaveUserConnection", username).catch(function (err) {
+        return console.error(err.toString());
+    })
+    console.log("SaveUserConnection")
+}
+function js_Login() {
     var account = $('#account').val();
     var password = $('#password').val();
     var formData = new FormData();
@@ -22,18 +36,22 @@
         data: formData,
         success: function (rp) {
             if (rp.status == true) {
+                connection.on("OnConnected", function () {
+                    OnConnected();
+                });
                 console.log(rp.message)
                 window.location.href = "/Home";
+               
             } else {
-                    var message = rp.message;
-                    var title = "";
-                    toastr["error"](message, title, {
-                        positionClass: 'toast-top-right',
-                        closeButton: true,
-                        progressBar: true,
-                        newestOnTop: true,
-                        timeOut: 3000
-                    });
+                var message = rp.message;
+                var title = "";
+                toastr["error"](message, title, {
+                    positionClass: 'toast-top-right',
+                    closeButton: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                    timeOut: 3000
+                });
             }
         }
     })
@@ -52,7 +70,7 @@ function js_ChangPassword() {
             timeOut: 3000
         });
         return;
-    }else if (oldPassword == newPassword) {
+    } else if (oldPassword == newPassword) {
         toastr["error"]("Mật khẩu cũ không được giống mật khẩu cũ!", "", {
             positionClass: 'toast-top-right',
             closeButton: true,

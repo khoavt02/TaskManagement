@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using TaskManagement.Helper;
+using TaskManagement.Hubs;
 using TaskManagement.Models;
 
 namespace TaskManagement.Controllers
@@ -12,9 +13,11 @@ namespace TaskManagement.Controllers
         private readonly TaskManagementContext _context;
         private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public LoginController(TaskManagementContext context)
+        NotificationHub notificationHub;
+        public LoginController(TaskManagementContext context, NotificationHub notification)
         {
             this._context = context;
+			this.notificationHub = notification;
         }
         public IActionResult Index()
         {
@@ -32,9 +35,11 @@ namespace TaskManagement.Controllers
 					Response.Cookies.Delete("AspNetCore.Security.Out");
 					Response.Cookies.Append("account", user.Account);
 					Response.Cookies.Append("user_code", user.UserCode);
+                    HttpContext.Session.SetString("Username", user.Account);
 					//string userData = JsonConvert.SerializeObject(user);
 					//SessionHelpers.Set(_contextAccessor, userData, 10 * 365);
-					return new JsonResult(new { status = true, message = "Đăng nhập thành công" });
+					//notificationHub.SaveUserConnection("admin");
+                    return new JsonResult(new { status = true, message = "Đăng nhập thành công" });
 				}
 				else
                 {
@@ -91,7 +96,8 @@ namespace TaskManagement.Controllers
 		public IActionResult Logout()
 		{
 			Response.Clear();
-			return RedirectToPage("/Login/Index");
+            HttpContext.Session.Remove("Username");
+            return RedirectToPage("/Login/Index");
 		}
 
 	}
