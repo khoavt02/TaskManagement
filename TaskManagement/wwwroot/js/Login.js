@@ -1,17 +1,17 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
-connection.start().then(function () {
-    console.log('connected to hub');
-}).catch(function (err) {
-    return console.error(err.toString());
-});
+﻿//var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+//connection.start().then(function () {
+//    console.log('connected to hub');
+//}).catch(function (err) {
+//    return console.error(err.toString());
+//});
 
-function OnConnected() {
-    var username = "admin";
-    connection.invoke("SaveUserConnection", username).catch(function (err) {
-        return console.error(err.toString());
-    })
-    console.log("SaveUserConnection")
-}
+//function OnConnected() {
+//    var username = "admin";
+//    connection.invoke("SaveUserConnection", username).catch(function (err) {
+//        return console.error(err.toString());
+//    })
+//    console.log("SaveUserConnection")
+//}
 function js_Login() {
     var account = $('#account').val();
     var password = $('#password').val();
@@ -36,9 +36,9 @@ function js_Login() {
         data: formData,
         success: function (rp) {
             if (rp.status == true) {
-                connection.on("OnConnected", function () {
-                    OnConnected();
-                });
+                //connection.on("OnConnected", function () {
+                //    OnConnected();
+                //});
                 console.log(rp.message)
                 window.location.href = "/Home";
                

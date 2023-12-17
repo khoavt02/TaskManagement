@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Quản lý công việc";
+}
+<style>
+    .select2-container{
+        display: block !important
+    }
+</style>
+
+<a href="/Task/TaskCreate" class="btn btn-primary float-right mt-n1"><i class="fas fa-plus"></i> Tạo mới</a>
+<h1 class="h3 mb-3">Công việc</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Tên/ Mã công việc</label>
+                            <div class="input-group">
+                                <input type="text" id="name_s" class="form-control" placeholder="Nhập tên hoặc mã công việc">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Từ ngày</label>
+                            <div class="input-group date" id="datetimepicker-date-1" data-target-input="nearest">
+                                <input type="text" id="from-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-1">
+                                <div class="input-group-append" data-target="#datetimepicker-date-1" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Đến ngày</label>
+                            <div class="input-group date" id="datetimepicker-date-2" data-target-input="nearest">
+                                <input type="text" id="to-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-2">
+                                <div class="input-group-append" data-target="#datetimepicker-date-2" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-control select2" id="status_s" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="NEW">Chưa thực hiện</option>
+                                <option value="PROCESSING">Đang thực hiện</option>
+                                <option value="COMPLETE">Hoàn thành</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Mức độ</label>
+                            <select class="form-control select2" id="priority_level_s" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="IMPORTANT">Quan trọng</option>
+                                <option value="HIGH">Cao</option>
+                                <option value="NORMAL">Bình thường</option>
+                                <option value="LOW">Thấp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-control select2" id="review_s" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="1">Đã đánh giá</option>
+                                <option value="0">Chưa đánh giá</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <table id="data-table" class="table table-striped" style="width:100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAddReview" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đánh giá công việc</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <input hidden type="text" id="task_id_review"/>
+                <input hidden type="text" id="project_id_review"/>
+                <div class="form-group">
+                    <label class="form-label" for="point_review">Điểm số:</label>
+                    <input id="point_review" class="form-control" type="text" name="point_review" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="complete_level">Mức độ hoàn thành:</label>
+                    <select class="form-control select2" id="complete_level" data-toggle="select2" >
+                        <option value="">--Chọn mức độ hoàn thành--</option>
+                        <option value="EXCELLENT">Xuất sắc</option>
+                        <option value="GOOD">Tốt</option>
+                        <option value="NORMAL">Bình thường</option>
+                        <option value="Bad">Chưa tốt</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="review_description">Nhận xét:</label>
+                    <textarea rows="3" class="form-control" id="review_description" name="review_description" placeholder="Nhập mô tả chi tiết"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_AddTaskReview()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/Task.js"></script>
+
+

@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data;
+using System.Drawing;
 using TaskManagement.Helper;
 using TaskManagement.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Task = TaskManagement.Models.Task;
 
 namespace TaskManagement.Controllers
 {
@@ -102,35 +106,57 @@ namespace TaskManagement.Controllers
 				return new JsonResult(new { status = false, message = "Error" + ex });
 			}
 		}
+
+		public IActionResult ListProject()
+		{
+			ViewBag.lstPositions = _context.Positons.ToList();
+			ViewBag.lstDepartments = _context.Departments.ToList();
+			ViewBag.lstRoles = _context.RoleGroups.ToList();
+			ViewBag.lstUsers = _context.Users.ToList();
+			return View();
+		}
+
 		[HttpGet]
-		public JsonResult GetListDepartment( int offset, int limit)
+		public JsonResult GetListProject( int offset, int limit)
 		{
 			try
 			{
-                var departments = _context.Departments;
+                var projects = _context.Projects;
                 var users = _context.Users;
 
-                var query = departments
-    .GroupJoin(users, d => d.Mannager, u => u.UserCode, (d, u) => new { Department = d, ManagerUser = u })
-    .SelectMany(x => x.ManagerUser.DefaultIfEmpty(), (x, d) => new { x.Department, ManagerUser = d })
-    .GroupJoin(users, d => d.Department.CreatedBy, u => u.UserCode, (d, u) => new { d.Department, d.ManagerUser, CreatedUser = u })
-    .SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
-    {
-        Id = x.Department.Id,
-        DepartmentCode = x.Department.DepartmentCode,
-        DepartmentName = x.Department.DepartmentName,
-        CreatedDate = x.Department.CreatedDate,
-		Mannager = x.Department.Mannager,
-		Status = x.Department.Status,
-        Manager = x.ManagerUser != null ? x.ManagerUser.UserName : string.Empty,
-        CreatedName = user != null ? user.UserName : string.Empty,
-    });
+				var query = projects
+	.GroupJoin(users, d => d.Manager, u => u.UserCode, (d, u) => new { Project = d, Manager = u })
+	.SelectMany(x => x.Manager.DefaultIfEmpty(), (x, d) => new { x.Project, Manager = d })
+	.GroupJoin(users, d => d.Project.CreatedBy, u => u.UserCode, (d, u) => new { d.Project, d.Manager, CreatedUser = u })
+	.SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
+	{
+		Id = x.Project.Id,
+		UpdatedBy = x.Project.UpdatedBy,
+		UpdatedDate = x.Project.UpdatedDate,
+		CreatedBy = x.Project.CreatedBy,
+		CreatedDate = x.Project.CreatedDate,
+		Status = x.Project.Status,
+		Point = x.Project.Point,
+		PriorityLevel = x.Project.PriorityLevel,
+		MembersQuantity = x.Project.MembersQuantity,
+		Description = x.Project.Description,
+		Users = x.Project.Users,
+		Department = x.Project.Department,
+		Manager = x.Project.Manager,
+		Process = x.Project.Process,
+		EndTime = x.Project.EndTime,
+		StartTime = x.Project.StartTime,
+		ProjectName = x.Project.ProjectName,
+		ProjectCode = x.Project.ProjectCode,
+		ManagerName = x.Manager != null ? x.Manager.UserName : string.Empty,
+		CreatedName = user != null ? user.UserName : string.Empty,
+	}) ;
                 //List<User> lstUser = _context.Users.ToList();
                 var data = (from s in _context.Users select s);
-                var lstDepartment = query.Skip(offset).Take(limit).ToList();
-                if (lstDepartment.Count > 0) {
+                var lstProject = query.Skip(offset).Take(limit).ToList();
+                if (lstProject.Count > 0) {
                     //return new JsonResult(new { status = true, data = lstUser });
-                    return new JsonResult(new { status = true, rows = lstDepartment, total = data.Count() });
+                    return new JsonResult(new { status = true, rows = lstProject, total = projects.Count() });
                 }
 				else
 				{
@@ -142,26 +168,20 @@ namespace TaskManagement.Controllers
 				return new JsonResult(new { status = false, message = "Error" + ex });
 			}
 		}
-		
-		[HttpGet]
-		public JsonResult GetDetailDepartmentById(int id)
+
+		public IActionResult ProjectDetail(int id)
 		{
-			try
-			{
-				Department department = _context.Departments.Where(x => x.Id == id).FirstOrDefault();
-				if (department != null)
-				{
-                    return new JsonResult(new { status = true, data = department });
-				}
-				else
-				{
-					return new JsonResult(new { status = false, message = "Không tìm thấy bản ghi" });
-				}
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new { status = false, message = "Error" + ex });
-			}
+			ViewBag.lstPositions = _context.Positons.ToList();
+			ViewBag.lstDepartments = _context.Departments.ToList();
+			ViewBag.lstRoles = _context.RoleGroups.ToList();
+			ViewBag.lstUsers = _context.Users.ToList();
+			ViewBag.lstProjects = _context.Projects.ToList();
+			//Task taskDetail = _context.Tasks.Find(id);
+			Project project = _context.Projects.Find(id);
+			ViewBag.projectName = project.ProjectName;
+			ViewBag.department = project.Department;
+
+			return View(project);
 		}
 	}
 }

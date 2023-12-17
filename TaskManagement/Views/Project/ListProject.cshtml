@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "Quản lý dự án";
+}
+<a href="/ProjectCreate" class="btn btn-primary float-right mt-n1"><i class="fas fa-plus"></i> Tạo mới</a>
+<h1 class="h3 mb-3">Dự án</h1>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Tên/ Mã dự án</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Nhập tên hoặc mã dự án">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Từ ngày</label>
+                            <div class="input-group date" id="datetimepicker-minimum" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker-minimum">
+                                <div class="input-group-append" data-target="#datetimepicker-minimum" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Đến ngày</label>
+                            <div class="input-group date" id="datetimepicker-date" data-target-input="nearest">
+                                <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker-date">
+                                <div class="input-group-append" data-target="#datetimepicker-date" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-control select2" id="status" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="NEW">Chưa thực hiện</option>
+                                <option value="PROCESSING">Đang thực hiện</option>
+                                <option value="COMPLETE">Hoàn thành</option>
+                                <option value="EVULATED">Đã đánh giá</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Mức độ</label>
+                            <select class="form-control select2" id="priority_level" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="IMPORTANT">Quan trọng</option>
+                                <option value="HIGH">Cao</option>
+                                <option value="NORMAL">Bình thường</option>
+                                <option value="LOW">Thấp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Người tạo</label>
+                            <select class="form-control select2" id="priority_level" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <table id="table-projects" class="table table-striped" style="width:100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sizedModalMd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới phòng ban</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="form-group">
+                    <label class="form-label" for="code">Mã phòng ban:</label>
+                    <input id="code" class="form-control" type="text" name="code" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="name">Tên phòng ban:</label>
+                    <input id="name" class="form-control" type="text" name="name" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="management">Trưởng phòng:</label>
+                    <select class="form-control select2" id="management" data-toggle="select2">
+                        <option value="">--Chọn trưởng phòng--</option>
+                        @if (ViewBag.lstUsers != null)
+                        {
+                            foreach (var item in ViewBag.lstUsers)
+                            {
+                                <option value="@item.UserCode">@item.UserName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trạng thái:</label>
+                    <select class="form-control select2" id="status" data-toggle="select2">
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Ngưng hoạt động</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_AddDepartment()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalUpdateDepartment" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa phòng ban</h5>
+                <button onclick="js_closeModalUpdate()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <input hidden id="department_id">
+                <div class="form-group">
+                    <label class="form-label" for="code_u">Mã phòng ban:</label>
+                    <input id="code_u" class="form-control" type="text" name="code_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="name_u">Tên phòng ban:</label>
+                    <input id="name_u" class="form-control" type="text" name="name_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="management_u">Trưởng phòng:</label>
+                    <select class="form-control select2" id="management_u" data-toggle="select2">
+                        @if (ViewBag.lstUsers != null)
+                        {
+                            foreach (var item in ViewBag.lstUsers)
+                            {
+                                <option value="@item.UserCode">@item.UserName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trạng thái:</label>
+                    <select class="form-control select2" id="status_u" data-toggle="select2">
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Ngưng hoạt động</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="js_closeModalUpdate()" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_UpdateDepartment()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/Project.js"></script>
+
+

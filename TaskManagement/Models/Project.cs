@@ -14,6 +14,7 @@ public partial class Project
     public DateTime? StartTime { get; set; }
 
     public DateTime? EndTime { get; set; }
+    public DateTime? CompleteTime { get; set; }
 
     public string? Manager { get; set; }
 

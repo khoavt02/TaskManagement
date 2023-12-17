@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using TaskManagement.Helper;
-using TaskManagement.Hubs;
+//using TaskManagement.Hubs;
 using TaskManagement.Models;
 
 namespace TaskManagement.Controllers
@@ -12,12 +12,12 @@ namespace TaskManagement.Controllers
     {
         private readonly TaskManagementContext _context;
         private readonly ILogger _logger;
-		private readonly IHttpContextAccessor _contextAccessor;
-        NotificationHub notificationHub;
-        public LoginController(TaskManagementContext context, NotificationHub notification)
+		//private readonly IHttpContextAccessor _contextAccessor;
+        //NotificationHub notificationHub;
+        public LoginController(TaskManagementContext context)
         {
             this._context = context;
-			this.notificationHub = notification;
+			//this.notificationHub = notification;
         }
         public IActionResult Index()
         {
@@ -36,6 +36,7 @@ namespace TaskManagement.Controllers
 					Response.Cookies.Append("account", user.Account);
 					Response.Cookies.Append("user_code", user.UserCode);
                     HttpContext.Session.SetString("Username", user.Account);
+                    HttpContext.Session.SetString("user_code", user.UserCode);
 					//string userData = JsonConvert.SerializeObject(user);
 					//SessionHelpers.Set(_contextAccessor, userData, 10 * 365);
 					//notificationHub.SaveUserConnection("admin");

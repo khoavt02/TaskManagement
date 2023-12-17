@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Data;
+using System.Globalization;
+using System.Threading.Tasks;
 using TaskManagement.Helper;
 using TaskManagement.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Task = TaskManagement.Models.Task;
 
@@ -339,7 +343,7 @@ namespace TaskManagement.Controllers
                     if (task != null)
                     {
                         task.ProcessPercent = taskProccess.ProcessPercent;
-                        if(task.Status == "NEW" && taskProccess.ProcessPercent < 100)
+                        if (task.Status == "NEW" && taskProccess.ProcessPercent < 100)
                         {
                             task.Status = "PROCESSING";
                         }
@@ -351,33 +355,73 @@ namespace TaskManagement.Controllers
                     }
                     _context.Add(taskProccess);
                     _context.Update(task);
-                    Task taskParent = _context.Tasks.Where(x => x.Id == task.TaskParent).FirstOrDefault();
-                    List<Task> lstTaskChild = _context.Tasks.Where(x => x.TaskParent == taskParent.Id).ToList();
-                    int countTaskChild = lstTaskChild.Count;
-                    decimal totalProcess = 0;
-                    if (countTaskChild > 0)
+                    if (task.TaskParent != null)
                     {
-                        foreach (Task taskChild in lstTaskChild)
+                        Task taskParent = _context.Tasks.Where(x => x.Id == task.TaskParent).FirstOrDefault();
+                        List<Task> lstTaskChild = _context.Tasks.Where(x => x.TaskParent == taskParent.Id).ToList();
+                        int countTaskChild = lstTaskChild.Count;
+                        decimal totalProcess = 0;
+                        if (countTaskChild > 0)
                         {
-                            totalProcess = (decimal)(totalProcess + taskChild.ProcessPercent);
+                            foreach (Task taskChild in lstTaskChild)
+                            {
+                                totalProcess = (decimal)(totalProcess + taskChild.ProcessPercent);
+                            }
                         }
-                    }
-                    taskParent.ProcessPercent = totalProcess/countTaskChild;
-                    if(taskParent.Status == "NEW")
-                    {
-                        taskParent.Status = "PROCESSING";
-                    }else if(taskParent.ProcessPercent == 100)
-                    {
-                        taskParent.Status = "COMPLETE";
+                        taskParent.ProcessPercent = totalProcess / countTaskChild;
+                        if (taskParent.Status == "NEW")
+                        {
+                            taskParent.Status = "PROCESSING";
+                        }
+                        else if (taskParent.ProcessPercent == 100)
+                        {
+                            taskParent.Status = "COMPLETE";
+                            taskParent.CompleteTime = DateTime.Now;
 
+                        }
+                        _context.Update(taskParent);
                     }
-                    _context.Update(taskParent);
                     _context.SaveChanges();
                     return new JsonResult(new { status = true, message = "Thêm mới tiến độ thành công!" });
                 }
                 else
                 {
                     return new JsonResult(new { status = false, message = "Thêm mới tiến độ thất bại!" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult AddReviewTask(IFormCollection model)
+        {
+            try
+            {
+                if (model != null)
+                {
+
+                    var taskEvualate = new TaskEvaluate()
+                    {
+                        TaskId = int.Parse(model["task_id_review"]),
+                        ProjectId = int.Parse(model["project_id_review"]),
+                        Content = model["complete_level"],
+                        Description = model["review_description"],
+                        Points = decimal.Parse(model["point_review"]),
+                        CreatedDate = DateTime.Now,
+                        CreatedBy = HttpContext.Session.GetString("user_code")
+                };
+
+                    _context.Add(taskEvualate);
+                    _context.SaveChanges();
+                    return new JsonResult(new { status = true, message = "Đánh giá thành công!" });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Đánh giá thất bại!" });
 
                 }
             }
@@ -406,7 +450,7 @@ namespace TaskManagement.Controllers
 
                     using (var fileStream = new FileStream(fileName, FileMode.Create))
                     {
-                         file.CopyToAsync(fileStream);
+                        file.CopyToAsync(fileStream);
                     }
 
                     return new JsonResult(new { status = true, message = "Thêm file thành công!" });
@@ -420,9 +464,103 @@ namespace TaskManagement.Controllers
             {
                 return new JsonResult(new { status = false, message = "Error" + ex });
             }
-           
+
 
         }
         #endregion
+        public IActionResult ListTask()
+        {
+            ViewBag.lstPositions = _context.Positons.ToList();
+            ViewBag.lstDepartments = _context.Departments.ToList();
+            ViewBag.lstRoles = _context.RoleGroups.ToList();
+            ViewBag.lstUsers = _context.Users.ToList();
+            return View();
+        }
+        [HttpGet]
+        public JsonResult GetListTask(int offset, int limit, string name, string from_date, string to_date, string status, string priority_level, int review)
+        {
+            try
+            {
+                var tasks = _context.Tasks;
+                var users = _context.Users;
+                var task_evaluations = _context.TaskEvaluates.ToList();
+                var query = tasks
+     .GroupJoin(users,
+                            task => task.CreatedBy,
+                            user => user.UserCode,
+                            (task, userGroup) => new { Task = task, Users = userGroup })
+                        .SelectMany(
+                            x => x.Users.DefaultIfEmpty(),
+                            (x, user) => new
+                            {
+                                Id = x.Task.Id,
+                                TaskCode = x.Task.TaskCode,
+                                TaskName = x.Task.TaskName,
+                                Description = x.Task.Description,
+                                TaskParent = x.Task.TaskParent,
+                                ProjectId = x.Task.ProjectId,
+                                AssignedUser = x.Task.AssignedUser,
+                                Status = x.Task.Status,
+                                EstimateTime = x.Task.EstimateTime,
+                                Level = x.Task.Level,
+                                Points = x.Task.Points,
+                                ProcessPercent = x.Task.ProcessPercent,
+                                StartTime = x.Task.StartTime,
+                                EndTime = x.Task.EndTime,
+                                CompleteTime = x.Task.CompleteTime,
+                                CreatedDate = x.Task.CreatedDate,
+                                CreateBy = x.Task.CreatedBy,
+                                UpdateDate = x.Task.UpdateDate,
+                                UpdateBy = x.Task.UpdateBy,
+                                CreatedName = user.UserName,
+                            });
+
+
+                if (name != null)
+                {
+                    query = query.Where(x => x.TaskName == name || x.TaskCode == name);
+                }
+                if (status != null)
+                {
+                    query = query.Where(x => x.Status == status);
+                }
+                if (priority_level != null)
+                {
+                    query = query.Where(x => x.Level == priority_level);
+                }
+                if (from_date != null && to_date != null)
+                {
+                    DateTime parsedFromDate = DateTime.ParseExact(from_date, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    DateTime parsedToDate = DateTime.ParseExact(to_date, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    query = query.Where(x => (x.StartTime >= parsedFromDate && x.StartTime <= parsedToDate) ||
+                         (x.EndTime >= parsedFromDate && x.EndTime <= parsedToDate));
+                }
+                if (review != null)
+                {
+                    if (review == 1)
+                    {
+                        query = query.Where(x => x.IsEvaluated == true);
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.IsEvaluated == false);
+                    }
+                }
+                var lstTask = query.OrderBy(x => x.TaskCode).Skip(offset).Take(limit).ToList();
+                if (lstTask.Count > 0)
+                {
+                    //return new JsonResult(new { status = true, data = lstUser });
+                    return new JsonResult(new { status = true, rows = lstTask, total = lstTask.Count() });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Dữ liệu trống" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
     }
 }

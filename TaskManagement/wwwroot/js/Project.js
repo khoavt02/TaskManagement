@@ -3,6 +3,7 @@ $(function () {
     $('#menu-job').addClass("active");
     $('#menu-job-project').addClass("active");
     $('.select2').select2();
+    js_GetList();
 });
 function js_closeModalUpdate() {
     $('#ModalUpdateDepartment').modal('hide');
@@ -68,29 +69,11 @@ function js_AddProject() {
 }
 
 function js_GetList() {
-    //$.ajax({
-    //    url: '/User/GetListUser',
-    //    type: 'Get',
-    //    //data: JSON.stringify({  }),
-    //    contentType: 'application/json, charset=utf-8',
-    //    beforeSend: function () {
-    //        //js_Loading(true, 1);
-    //    },
-    //    success: function (data) {
-    //        //$("#table-content").find('tbody').empty();
-    //        $('#data-table').data(data);
-    //        //js_ReloadTable();
-    //        //js_Loading(false, 1);
-    //    },
-    //    error: function () {
-    //        //js_Loading(false, 1);
-    //    }
-    //});
-    var objTable = $("#data-table");
+    var objTable = $("#table-projects");
     objTable.bootstrapTable('destroy');
     objTable.bootstrapTable({
         method: 'Get',
-        url: '/Department/GetListDepartment',
+        url: '/Project/GetListProject',
         queryParams: function (p) {
             var param = $.extend(true, {
                 //keyword: $('#SearchAcademicLevel').val(),
@@ -109,25 +92,91 @@ function js_GetList() {
         columns: [
 
             {
-                field: "departmentCode",
-                title: "Mã phòng ban",
+                field: "projectCode",
+                title: "Mã dự án",
                 align: 'left',
                 valign: 'left',
+            },
+            {
+                field: "projectName",
+                title: "Tên dự án",
+                align: 'left',
+                valign: 'left',
+            },
+            {
+                field: "managerName",
+                title: "Quản lý",
+                align: 'left',
+                valign: 'left',
+            },
+            {
+                field: "department",
+                title: "Phòng ban",
+                align: 'left',
+                valign: 'left',
+            },
+            {
+                field: "startTime",
+                title: "Ngày bắt đầu",
+                align: 'left',
+                valign: 'left',
+                formatter: function (value, row, index) {
+                    if (row.startTime != '') {
+                        return moment(row.startTime).format('DD/MM/YYYY');
+                    }
+                    else {
+                        return '';
+                    }
+                }
 
             },
             {
-                field: "departmentName",
-                title: "Tên phòng ban",
+                field: "endTime",
+                title: "Ngày kết thúc",
                 align: 'left',
                 valign: 'left',
+                formatter: function (value, row, index) {
+                    if (row.endTime != '') {
+                        return moment(row.endTime).format('DD/MM/YYYY');
+                    }
+                    else {
+                        return '';
+                    }
+                }
 
             },
             {
-                field: "manager",
-                title: "Trưởng phòng",
+                field: "process",
+                title: "Tiến độ",
                 align: 'left',
                 valign: 'left',
+            },
+            {
+                field: "endTime",
+                title: "Ngày hoàn thành",
+                align: 'left',
+                valign: 'left',
+                formatter: function (value, row, index) {
+                    if (row.endTime != '') {
+                        return moment(row.endTime).format('DD/MM/YYYY');
+                    }
+                    else {
+                        return '';
+                    }
+                }
 
+            },
+            {
+                field: "priorityLevel",
+                title: "Mức độ",
+                align: 'left',
+                valign: 'left',
+            },
+            {
+                field: "point",
+                title: "Điểm số",
+                align: 'left',
+                valign: 'left',
             },
             {
                 field: "createdDate",
@@ -135,8 +184,9 @@ function js_GetList() {
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
-                    if (row.CreatedDate != '') {
-                        return moment(row.CreatedDate).format('DD/MM/YYYY');
+                    if (row.createdDate != '') {
+                        console.log(row.createdDate);
+                        return moment(row.createdDate).format('DD/MM/YYYY');
                     }
                     else {
                         return '';
@@ -158,7 +208,7 @@ function js_GetList() {
                 width: '100px',
                 class: 'CssAction',
                 formatter: function (value, row, index) {
-                    var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Sửa"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
+                    var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Chi tiết" href="/Project/ProjectDetail?id=' + row.id + '"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
                             //<a href="javascript:void(0)" class=" btn btn-danger btn-sm button btnDelete" title="Xóa"><i class="align-middle fas fa-fw fa-trash-alt"></i></a>'
                     return action;
                 },
@@ -169,31 +219,31 @@ function js_GetList() {
                     //    $('#NameAcademicLevelsdelete').text(row.Name);
                     //    $('#confirmDeleteModals').modal('show');
                     //},
-                    'click .btnEdit': function (e, value, row, index) {
-                        console.log(row);
-                        $.ajax({
-                            type: 'Get',
-                            url: '/Department/GetDetailDepartmentById',
-                            data: {
-                                id: row.id
-                            },
-                            success: function (rp) {
-                                if (rp.status) {
-                                    console.log(row.status, typeof (row.status), row)
-                                    $("#ModalUpdateDepartment").modal("show");
-                                    $('#name_u').val(row.departmentName);
-                                    $('#code_u').val(row.departmentCode);
-                                    $('#management_u').val(row.mannager);
-                                    var status = row.status == true ? 1 : 0;
-                                    $('#status_u').val(status);
-                                    $('#department_id').val(row.id);
-                                }
-                                else {
-                                    toastr.error(rp.message);
-                                }
-                            }
-                        })
-                    },
+                    //'click .btnEdit': function (e, value, row, index) {
+                    //    console.log(row);
+                    //    $.ajax({
+                    //        type: 'Get',
+                    //        url: '/Department/GetDetailDepartmentById',
+                    //        data: {
+                    //            id: row.id
+                    //        },
+                    //        success: function (rp) {
+                    //            if (rp.status) {
+                    //                console.log(row.status, typeof (row.status), row)
+                    //                $("#ModalUpdateDepartment").modal("show");
+                    //                $('#name_u').val(row.departmentName);
+                    //                $('#code_u').val(row.departmentCode);
+                    //                $('#management_u').val(row.mannager);
+                    //                var status = row.status == true ? 1 : 0;
+                    //                $('#status_u').val(status);
+                    //                $('#department_id').val(row.id);
+                    //            }
+                    //            else {
+                    //                toastr.error(rp.message);
+                    //            }
+                    //        }
+                    //    })
+                    //},
                 }
             },
 

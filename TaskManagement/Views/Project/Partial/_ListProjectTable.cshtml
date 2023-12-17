@@ -1,0 +1,68 @@
+﻿@using System.Data
+@model List<User>
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<table id="data-table" class="table table-striped" style="width:100%">
+					<thead>
+						<tr>
+							<th>STT</th>
+							<th>Mã dự án</th>
+							<th>Tên dự án</th>
+							<th>Quản lý</th>
+							<th>Phòng ban</th>
+							<th>Thời gian bắt đầu</th>
+							<th>Thời gian kết thúc</th>
+							<th>Tiến độ</th>
+							<th>Thời gian hoàn thành</th>
+							<th>Mức độ</th>
+							<th>Điểm số</th>
+							<th>Thời gian tạo</th>
+							<th>Người tạo</th>
+							<th>Hành động</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if(Model != null)
+						{ 
+							var lstUser = Model as List<User>;
+							var i = 1;
+							foreach(var item in lstUser)
+							{
+								<tr>
+									<td>@i</td>
+									<td>@item.UserCode</td>
+									<td>@item.UserName</td>
+									<td>@item.Account</td>
+									<td>@item.DepartmentName</td>
+									<td>@item.PositionName</td>
+									<td>@item.Role</td>
+									<td>@item.CreatedDate</td>
+									<td>@item.CreatedBy</td>
+									<td><i class="align-middle mr-2 fas fa-fw fa-pencil-alt"></i></td>
+								</tr>
+								i++;
+							}
+						}
+						else
+						{
+							<tr>
+								<td class="text-center" colspan="10">Dữ liệu trống!</td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+								<td class="d-none"></td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

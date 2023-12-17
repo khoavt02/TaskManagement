@@ -143,6 +143,9 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
                 .HasColumnName("created_date");
+            entity.Property(e => e.CompleteTime)
+                .HasColumnType("datetime")
+                .HasColumnName("complete_time");
             entity.Property(e => e.Department)
                 .HasMaxLength(500)
                 .HasColumnName("department");

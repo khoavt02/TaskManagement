@@ -13,7 +13,7 @@ var provider = builder.Services.BuildServiceProvider();
 var config = provider.GetService<IConfiguration>();
 builder.Services.AddDbContext<TaskManagementContext>(item => item.UseSqlServer(config.GetConnectionString("Database")), ServiceLifetime.Singleton);
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<NotificationHub>();
+//builder.Services.AddScoped<NotificationHub>();
 //builder.Services.AddSingleton<SubscribeNotificationTableDependency>();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -30,7 +30,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 app.UseSession();
-app.MapHub<NotificationHub>("/notificationHub");
+//app.MapHub<NotificationHub>("/notificationHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");

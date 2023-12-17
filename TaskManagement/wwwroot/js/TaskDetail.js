@@ -68,8 +68,8 @@ function js_GetList() {
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
-                    if (row.CreatedDate != '') {
-                        return moment(row.CreatedDate).format('DD/MM/YYYY');
+                    if (row.createdDate != '') {
+                        return moment(row.createdDate).format('DD/MM/YYYY');
                     }
                     else {
                         return '';
@@ -171,6 +171,7 @@ function js_AddTaskProccesss() {
                     newestOnTop: true,
                     timeOut: 3000
                 });
+                uploadFile();
                 $("#ModalAddProccess").modal("hide");
                 js_GetList();
                 window.location.reload();
@@ -190,7 +191,7 @@ function js_AddTaskProccesss() {
 }
 
 function uploadFile() {
-    var fileInput = document.getElementById('fileInput');
+    var fileInput = document.getElementById('proccess_file');
     var file = fileInput.files[0];
 
     if (file) {
@@ -204,14 +205,13 @@ function uploadFile() {
             .then(response => response.json())
             .then(data => {
                 if (data.status) {
-                    document.getElementById('message').innerText = data.message;
+                    console.log(data.message);
                 } else {
-                    document.getElementById('message').innerText = 'Upload failed: ' + data.message;
+                    console.log(data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('message').innerText = 'An error occurred during the upload.';
             });
     } 
 }
