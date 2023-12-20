@@ -9,9 +9,7 @@ public partial class Role
 
     public int? RoleGroupId { get; set; }
 
-    public string? ControllerName { get; set; }
-
-    public string? DisplayName { get; set; }
+    public string? ModuleCode { get; set; }
 
     public bool? Add { get; set; }
 

@@ -239,26 +239,7 @@ namespace TaskManagement.Controllers
             }
         }
 
-        [HttpGet]
-        public JsonResult GetDetailDepartmentById(int id)
-        {
-            try
-            {
-                Department department = _context.Departments.Where(x => x.Id == id).FirstOrDefault();
-                if (department != null)
-                {
-                    return new JsonResult(new { status = true, data = department });
-                }
-                else
-                {
-                    return new JsonResult(new { status = false, message = "Không tìm thấy bản ghi" });
-                }
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new { status = false, message = "Error" + ex });
-            }
-        }
+
 
         #region TaskDetail
         public IActionResult TaskDetail(int id)
@@ -413,8 +394,10 @@ namespace TaskManagement.Controllers
                         Points = decimal.Parse(model["point_review"]),
                         CreatedDate = DateTime.Now,
                         CreatedBy = HttpContext.Session.GetString("user_code")
-                };
-
+                    };
+                    var task = _context.Tasks.Where(x => x.Id == taskEvualate.TaskId).FirstOrDefault();
+                    task.Status = "EVALUATE";
+                    _context.Update(task);
                     _context.Add(taskEvualate);
                     _context.SaveChanges();
                     return new JsonResult(new { status = true, message = "Đánh giá thành công!" });
@@ -483,43 +466,106 @@ namespace TaskManagement.Controllers
             {
                 var tasks = _context.Tasks;
                 var users = _context.Users;
-                var task_evaluations = _context.TaskEvaluates.ToList();
-                var query = tasks
-     .GroupJoin(users,
-                            task => task.CreatedBy,
-                            user => user.UserCode,
-                            (task, userGroup) => new { Task = task, Users = userGroup })
-                        .SelectMany(
-                            x => x.Users.DefaultIfEmpty(),
-                            (x, user) => new
-                            {
-                                Id = x.Task.Id,
-                                TaskCode = x.Task.TaskCode,
-                                TaskName = x.Task.TaskName,
-                                Description = x.Task.Description,
-                                TaskParent = x.Task.TaskParent,
-                                ProjectId = x.Task.ProjectId,
-                                AssignedUser = x.Task.AssignedUser,
-                                Status = x.Task.Status,
-                                EstimateTime = x.Task.EstimateTime,
-                                Level = x.Task.Level,
-                                Points = x.Task.Points,
-                                ProcessPercent = x.Task.ProcessPercent,
-                                StartTime = x.Task.StartTime,
-                                EndTime = x.Task.EndTime,
-                                CompleteTime = x.Task.CompleteTime,
-                                CreatedDate = x.Task.CreatedDate,
-                                CreateBy = x.Task.CreatedBy,
-                                UpdateDate = x.Task.UpdateDate,
-                                UpdateBy = x.Task.UpdateBy,
-                                CreatedName = user.UserName,
-                            });
+                var task_evaluate = _context.TaskEvaluates;
+                //            var query = tasks
+                //.GroupJoin(users,
+                //           task => task.CreatedBy,
+                //           user => user.UserCode,
+                //           (task, userGroup) => new { Task = task, Users = userGroup })
+                //.SelectMany(
+                //           x => x.Users.DefaultIfEmpty(),
+                //           (x, user) => new
+                //           {
+                //               Task = x.Task,
+                //               Manager = user,
+                //           })
+                //.GroupJoin(task_evaluations,
+                //           p => p.Task.Id, // Sửa lại điều kiện join với ProjectId thay vì p.Project.Id
+                //           e => e.TaskId,
+                //           (p, evaluations) => new { p.Task, p.Manager, Evaluations = evaluations })
+                //.SelectMany(
+                //           x => x.Evaluations.DefaultIfEmpty(),
+                //           (x, evaluation) => new
+                //           {
+                //               Id = x.Task.Id,
+                //               TaskCode = x.Task.TaskCode,
+                //               TaskName = x.Task.TaskName,
+                //               Description = x.Task.Description,
+                //               TaskParent = x.Task.TaskParent,
+                //               ProjectId = x.Task.ProjectId,
+                //               AssignedUser = x.Task.AssignedUser,
+                //               Status = x.Task.Status,
+                //               EstimateTime = x.Task.EstimateTime,
+                //               Level = x.Task.Level,
+                //               Points = x.Task.Points,
+                //               ProcessPercent = x.Task.ProcessPercent,
+                //               StartTime = x.Task.StartTime,
+                //               EndTime = x.Task.EndTime,
+                //               CompleteTime = x.Task.CompleteTime,
+                //               CreatedDate = x.Task.CreatedDate,
+                //               CreateBy = x.Task.CreatedBy,
+                //               UpdateDate = x.Task.UpdateDate,
+                //               UpdateBy = x.Task.UpdateBy,
+                //               CreatedName = x.Manager.UserName, // Sử dụng x.Manager để tránh lỗi khi Manager là null
+                //               IsEvaluated = true ? x.Evaluations.FirstOrDefault().Id > 0 : false,
+                //           });
+                var intermediateResult = tasks
+    .GroupJoin(users,
+               task => task.CreatedBy,
+               user => user.UserCode,
+               (task, userGroup) => new { Task = task, Users = userGroup })
+    .SelectMany(
+               x => x.Users.DefaultIfEmpty(),
+               (x, user) => new
+               {
+                   Task = x.Task,
+                   Manager = user,
+               })
+    .ToList(); // Force execution
+
+                var query = intermediateResult
+                    .GroupJoin(task_evaluate,
+                               p => p.Task.Id,
+                               e => e.TaskId,
+                               (p, evaluations) => new { p.Task, p.Manager, Evaluations = evaluations })
+                    .SelectMany(
+                               x => x.Evaluations.DefaultIfEmpty(),
+                               (x, evaluation) => new
+                               {
+                                   Id = x.Task.Id,
+                                   TaskCode = x.Task.TaskCode,
+                                   TaskName = x.Task.TaskName,
+                                   Description = x.Task.Description,
+                                   TaskParent = x.Task.TaskParent,
+                                   ProjectId = x.Task.ProjectId,
+                                   AssignedUser = x.Task.AssignedUser,
+                                   Status = x.Task.Status,
+                                   EstimateTime = x.Task.EstimateTime,
+                                   Level = x.Task.Level,
+                                   Points = x.Task.Points,
+                                   ProcessPercent = x.Task.ProcessPercent,
+                                   StartTime = x.Task.StartTime,
+                                   EndTime = x.Task.EndTime,
+                                   CompleteTime = x.Task.CompleteTime,
+                                   CreatedDate = x.Task.CreatedDate,
+                                   CreateBy = x.Task.CreatedBy,
+                                   UpdateDate = x.Task.UpdateDate,
+                                   UpdateBy = x.Task.UpdateBy,
+                                   CreatedName = x.Manager?.UserName,
+                                   IsEvaluated = x.Evaluations != null && x.Evaluations.Any() ? x.Evaluations.First().Id > 0 : false,
+                               });
+
+                // Continue processing finalResult as needed
+
+                // Tiếp tục xử lý câu truy vấn nếu cần
+
 
 
                 if (name != null)
                 {
-                    query = query.Where(x => x.TaskName == name || x.TaskCode == name);
+                    query = query.Where(x => x.TaskName.Contains(name) || x.TaskCode.Contains(name));
                 }
+
                 if (status != null)
                 {
                     query = query.Where(x => x.Status == status);
@@ -530,12 +576,12 @@ namespace TaskManagement.Controllers
                 }
                 if (from_date != null && to_date != null)
                 {
-                    DateTime parsedFromDate = DateTime.ParseExact(from_date, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    DateTime parsedToDate = DateTime.ParseExact(to_date, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    DateTime parsedFromDate = DateTime.ParseExact(from_date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    DateTime parsedToDate = DateTime.ParseExact(to_date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
                     query = query.Where(x => (x.StartTime >= parsedFromDate && x.StartTime <= parsedToDate) ||
                          (x.EndTime >= parsedFromDate && x.EndTime <= parsedToDate));
                 }
-                if (review != null)
+                if (review != 0)
                 {
                     if (review == 1)
                     {
@@ -555,6 +601,141 @@ namespace TaskManagement.Controllers
                 else
                 {
                     return new JsonResult(new { status = false, message = "Dữ liệu trống" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
+
+        [HttpGet]
+        public PartialViewResult GetListTaskKaban( string name, string from_date, string to_date)
+        {
+            try
+            {
+                var tasks = _context.Tasks;
+                var users = _context.Users;
+                var task_evaluate = _context.TaskEvaluates;
+                var intermediateResult = tasks
+    .GroupJoin(users,
+               task => task.CreatedBy,
+               user => user.UserCode,
+               (task, userGroup) => new { Task = task, Users = userGroup })
+    .SelectMany(
+               x => x.Users.DefaultIfEmpty(),
+               (x, user) => new
+               {
+                   Task = x.Task,
+                   Manager = user,
+               })
+    .ToList(); // Force execution
+
+                var query = intermediateResult
+                    .GroupJoin(task_evaluate,
+                               p => p.Task.Id,
+                               e => e.TaskId,
+                               (p, evaluations) => new { p.Task, p.Manager, Evaluations = evaluations })
+                    .SelectMany(
+                               x => x.Evaluations.DefaultIfEmpty(),
+                               (x, evaluation) => new
+                               {
+                                   Id = x.Task.Id,
+                                   TaskCode = x.Task.TaskCode,
+                                   TaskName = x.Task.TaskName,
+                                   Description = x.Task.Description,
+                                   TaskParent = x.Task.TaskParent,
+                                   ProjectId = x.Task.ProjectId,
+                                   AssignedUser = x.Task.AssignedUser,
+                                   Status = x.Task.Status,
+                                   EstimateTime = x.Task.EstimateTime,
+                                   Level = x.Task.Level,
+                                   Points = x.Task.Points,
+                                   ProcessPercent = x.Task.ProcessPercent,
+                                   StartTime = x.Task.StartTime,
+                                   EndTime = x.Task.EndTime,
+                                   CompleteTime = x.Task.CompleteTime,
+                                   CreatedDate = x.Task.CreatedDate,
+                                   CreateBy = x.Task.CreatedBy,
+                                   UpdateDate = x.Task.UpdateDate,
+                                   UpdateBy = x.Task.UpdateBy,
+                                   CreatedName = x.Manager?.UserName,
+                                   IsEvaluated = x.Evaluations != null && x.Evaluations.Any() ? x.Evaluations.First().Id > 0 : false,
+                               });
+
+                if (name != null)
+                {
+                    query = query.Where(x => x.TaskName.Contains(name) || x.TaskCode.Contains(name));
+                }
+                if (from_date != null && to_date != null)
+                {
+                    DateTime parsedFromDate = DateTime.ParseExact(from_date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    DateTime parsedToDate = DateTime.ParseExact(to_date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    query = query.Where(x => (x.StartTime >= parsedFromDate && x.StartTime <= parsedToDate) ||
+                         (x.EndTime >= parsedFromDate && x.EndTime <= parsedToDate));
+                }
+                //var listTaskView = new List<TaskView>();
+                var lstTask = query.OrderBy(x => x.TaskCode).ToList();
+                var listTaskView = lstTask.Select(task => new TaskView
+                {
+                    Id = task.Id,
+                    TaskCode = task.TaskCode,
+                    TaskName = task.TaskName,
+                    Description = task.Description,
+                    TaskParent = task.TaskParent,
+                    ProjectId = task.ProjectId,
+                    AssignedUser = task.AssignedUser,
+                    Status = task.Status,
+                    EstimateTime = task.EstimateTime,
+                    Level = task.Level,
+                    Points = task.Points,
+                    ProcessPercent = task.ProcessPercent,
+                    StartTime = task.StartTime,
+                    EndTime = task.EndTime,
+                    CompleteTime = task.CompleteTime,
+                    CreatedDate = task.CreatedDate,
+                    CreatedBy = task.CreateBy,
+                    UpdateDate = task.UpdateDate,
+                    UpdateBy = task.UpdateBy,
+                    CreatedName = task.CreatedName, // Assuming Manager is a navigation property in your Task entity
+                    IsEvaluated = task.IsEvaluated
+                }).ToList();
+                return PartialView("~/Views/Task/Partial/_ListTask.cshtml", listTaskView);
+            }
+            catch (Exception ex)
+            {
+                return PartialView("~/Views/Task/Partial/_ListTask.cshtml");
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetDetailReviewById(int id)
+        {
+            try
+            {
+                var detailR = _context.TaskEvaluates
+                .Where(x => x.TaskId == id)
+                .GroupJoin(
+                    _context.Users,
+                    te => te.CreatedBy,
+                    u => u.UserCode,
+                    (te, userGroup) => new { TaskEvaluate = te, Users = userGroup })
+                .SelectMany(
+                    x => x.Users.DefaultIfEmpty(),
+                    (x, user) => new
+                    {
+                        TaskEvaluate = x.TaskEvaluate,
+                        CreatedByName = user != null ? user.UserName : null,
+                        // Add other properties you need from TaskEvaluate and Users
+                    })
+                .FirstOrDefault();
+                if (detailR != null)
+                {
+                    return new JsonResult(new { status = true, data = detailR });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Không tìm thấy bản ghi" });
                 }
             }
             catch (Exception ex)

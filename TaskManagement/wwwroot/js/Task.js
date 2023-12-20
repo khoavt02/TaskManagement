@@ -10,8 +10,8 @@
     });
     js_GetList();
 });
-function js_closeModalUpdate() {
-    $('#ModalUpdateDepartment').modal('hide');
+function closeAllModals() {
+    $('.modal').modal('hide');
 }
 function js_AddTask() {
     var point = $('#point').val();
@@ -141,8 +141,8 @@ function js_GetList() {
     review_s = $('#review_s').val();
     priority_level_s = $('#priority_level_s').val();
     status_s = $('#status_s').val();
-    to_date = $('#from-date').val();
-    from_date = $('#to-date').val();
+    to_date = $('#to-date').val();
+    from_date = $('#from-date').val();
     name_s = $('#name_s').val();
     console.log(review_s, priority_level_s, status_s, to_date, from_date, name_s);
     var objTable = $("#data-table");
@@ -333,8 +333,10 @@ function js_GetList() {
                 formatter: function (value, row, index) {
                     var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Chi tiết" href="/Task/TaskDetail?id=' + row.id + '"><i class="align-middle fas fa-fw fa-file"></i></a>'
                     //<a href="javascript:void(0)" class=" btn btn-danger btn-sm button btnDelete" title="Xóa"><i class="align-middle fas fa-fw fa-trash-alt"></i></a>'
-                    if (row.status == "COMPLETE") {
+                    if (row.status == "COMPLETE" && row.isEvaluated == false) {
                         action += '<a class=" btn btn-success btn-sm ml-1 btnReview" title="Đánh giá"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
+                    } else if (row.isEvaluated == true) {
+                        action += '<a class=" btn btn-success btn-sm ml-1 btnReviewDetail" title="Đánh giá"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
                     }
                     return action;
                 },
@@ -346,7 +348,47 @@ function js_GetList() {
                             console.log(row.id, row.projectId);
                             $('#task_id_review').val(row.id);
                             $('#project_id_review').val(row.projectId);
+                            $('#point_review').val("");
+                            $('#complete_level').val("");
+                            $('#review_description').val("");
                             $('#ModalAddReview').modal('show');
+                        } catch (error) {
+                            console.error('Error in click.btnReview:', error);
+                        }
+                    },
+                    'click .btnReviewDetail': function (e, value, row, index) {
+                        try {
+                            selectedId = row.id;
+                            console.log(row.id, row.projectId);
+                            $.ajax({
+                                type: 'Get',
+                                url: '/Task/GetDetailReviewById',
+                                data: {
+                                    id: row.id
+                                },
+                                success: function (rp) {
+                                    if (rp.status) {
+                                        console.log(rp.data);
+                                        $('#point_review_d').val(rp.data.taskEvaluate.points);
+                                        $('#complete_level_d').val(rp.data.taskEvaluate.content);
+                                        $('#complete_level_d').select2();
+                                        $('#review_description_d').val(rp.data.taskEvaluate.description);
+                                        const inputDate = moment(rp.data.taskEvaluate.createdDate);
+                                        const formattedDate = inputDate.format('DD-MM-YYYY HH:mm:ss');
+                                        $('#date_review_d').val(formattedDate);
+                                        $('#user_review_d').val(rp.data.createdByName);
+                                    }
+                                    else {
+                                        toastr.error(rp.message);
+                                    }
+                                }
+                            })
+                            $('#task_id_review').val(row.id);
+                            $('#project_id_review').val(row.projectId);
+                            $('#point_review').val("");
+                            $('#complete_level').val("");
+                            $('#review_description').val("");
+                            $('#ModalDetailReview').modal('show');
                         } catch (error) {
                             console.error('Error in click.btnReview:', error);
                         }
@@ -436,4 +478,5 @@ function js_AddTaskReview() {
         }
     })
 }
+
 

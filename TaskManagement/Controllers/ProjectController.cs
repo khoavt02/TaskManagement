@@ -183,5 +183,73 @@ namespace TaskManagement.Controllers
 
 			return View(project);
 		}
-	}
+
+        [HttpGet]
+        public PartialViewResult GetListProjectKaban()
+        {
+            try
+            {
+                var projects = _context.Projects;
+                var users = _context.Users;
+
+                var query = projects
+    .GroupJoin(users, d => d.Manager, u => u.UserCode, (d, u) => new { Project = d, Manager = u })
+    .SelectMany(x => x.Manager.DefaultIfEmpty(), (x, d) => new { x.Project, Manager = d })
+    .GroupJoin(users, d => d.Project.CreatedBy, u => u.UserCode, (d, u) => new { d.Project, d.Manager, CreatedUser = u })
+    .SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
+    {
+        Id = x.Project.Id,
+        UpdatedBy = x.Project.UpdatedBy,
+        UpdatedDate = x.Project.UpdatedDate,
+        CreatedBy = x.Project.CreatedBy,
+        CreatedDate = x.Project.CreatedDate,
+        Status = x.Project.Status,
+        Point = x.Project.Point,
+        PriorityLevel = x.Project.PriorityLevel,
+        MembersQuantity = x.Project.MembersQuantity,
+        Description = x.Project.Description,
+        Users = x.Project.Users,
+        Department = x.Project.Department,
+        Manager = x.Project.Manager,
+        Process = x.Project.Process,
+        EndTime = x.Project.EndTime,
+        StartTime = x.Project.StartTime,
+        ProjectName = x.Project.ProjectName,
+        ProjectCode = x.Project.ProjectCode,
+        ManagerName = x.Manager != null ? x.Manager.UserName : string.Empty,
+        CreatedName = user != null ? user.UserName : string.Empty,
+    });
+                //List<User> lstUser = _context.Users.ToList();
+                var data = (from s in _context.Users select s);
+                var listTaskView = query.Select(project => new ProjectView
+                {
+                    Id = project.Id,
+                    ProjectCode = project.ProjectCode,
+                    ProjectName = project.ProjectName,
+                    StartTime = project.StartTime,
+                    EndTime = project.EndTime,
+                    Manager = project.Manager, // Assuming Manager is a navigation property in your Project entity
+                    Department = project.Department,
+                    Users = project.Users,
+                    Description = project.Description,
+                    MembersQuantity = project.MembersQuantity,
+                    PriorityLevel = project.PriorityLevel,
+                    Point = project.Point,
+                    Process = project.Process,
+                    Status = project.Status,
+                    CreatedDate = project.CreatedDate,
+                    CreatedBy = project.CreatedBy,
+                    UpdatedDate = project.UpdatedDate,
+                    UpdatedBy = project.UpdatedBy,
+                    CreatedName = project.CreatedName,
+                    ManagerName = project.ManagerName
+                }).ToList();
+                return PartialView("~/Views/Project/Partial/_ListProject.cshtml", listTaskView);
+            }
+            catch (Exception ex)
+            {
+                return PartialView("~/Views/Project/Partial/_ListProject.cshtml");
+            }
+        }
+    }
 }

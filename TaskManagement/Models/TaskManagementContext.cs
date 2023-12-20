@@ -35,6 +35,7 @@ public partial class TaskManagementContext : DbContext
     public virtual DbSet<Positions> Positons { get; set; }
     public virtual DbSet<Notification> Notifications { get; set; }
     public virtual DbSet<HubConnection> HubConnections { get; set; }
+    public virtual DbSet<Module> Modules { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -198,13 +199,9 @@ public partial class TaskManagementContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Add).HasColumnName("add");
-            entity.Property(e => e.ControllerName)
-                .HasMaxLength(50)
-                .HasColumnName("controller_name");
-            entity.Property(e => e.Delete).HasColumnName("delete");
-            entity.Property(e => e.DisplayName)
-                .HasMaxLength(50)
-                .HasColumnName("display_name");
+            entity.Property(e => e.ModuleCode)
+                .HasMaxLength(100)
+                .HasColumnName("module_code");
             entity.Property(e => e.Edit).HasColumnName("edit");
             entity.Property(e => e.Export).HasColumnName("export");
             entity.Property(e => e.RoleGroupId).HasColumnName("role_group_id");
@@ -372,7 +369,23 @@ public partial class TaskManagementContext : DbContext
                 .HasColumnName("user_name");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+		modelBuilder.Entity<Module>(entity =>
+		{
+			entity.ToTable("modules");
+
+			entity.Property(e => e.Id).HasColumnName("id");
+			entity.Property(e => e.ModuleCode)
+				.HasMaxLength(100)
+				.HasColumnName("module_code");
+			entity.Property(e => e.ModuleName)
+				.HasMaxLength(255)
+				.HasColumnName("module_name");
+			entity.Property(e => e.DisplayName)
+				.HasMaxLength(1000)
+				.HasColumnName("display_name");
+		});
+
+		OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

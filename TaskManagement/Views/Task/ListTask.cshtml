@@ -77,9 +77,9 @@
                         <div class="form-group">
                             <label class="form-label">Trạng thái</label>
                             <select class="form-control select2" id="review_s" data-toggle="select2">
-                                <option value="">Tất cả</option>
+                                <option value="0">Tất cả</option>
                                 <option value="1">Đã đánh giá</option>
-                                <option value="0">Chưa đánh giá</option>
+                                <option value="2">Chưa đánh giá</option>
                             </select>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Đánh giá công việc</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button onclick="closeAllModals()" type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -123,8 +123,52 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAllModals()" data-dismiss="modal">Đóng</button>
                 <button type="button" class="btn btn-primary" onclick="js_AddTaskReview()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalDetailReview" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đánh giá công việc</h5>
+                <button onclick="closeAllModals()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="form-group">
+                    <label class="form-label" for="point_review_d">Điểm số:</label>
+                    <input id="point_review_d" class="form-control" type="text" name="point_review_d" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="complete_level_d">Mức độ hoàn thành:</label>
+                    <select class="form-control select2" id="complete_level_d" data-toggle="select2">
+                        <option value="">--Chọn mức độ hoàn thành--</option>
+                        <option value="EXCELLENT">Xuất sắc</option>
+                        <option value="GOOD">Tốt</option>
+                        <option value="NORMAL">Bình thường</option>
+                        <option value="Bad">Chưa tốt</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="review_description_d">Nhận xét:</label>
+                    <textarea rows="3" class="form-control" id="review_description_d" name="review_description_d" placeholder="Nhập mô tả chi tiết"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="user_review_d">Người đánh giá:</label>
+                    <input id="user_review_d" class="form-control" type="text" name="user_review_d" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="date_review_d">Ngày đánh giá:</label>
+                    <input id="date_review_d" class="form-control" type="text" name="date_review_d" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closeAllModals()" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
