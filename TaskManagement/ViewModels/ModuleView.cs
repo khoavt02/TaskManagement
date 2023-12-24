@@ -3,14 +3,13 @@ using System.Collections.Generic;
 
 namespace TaskManagement.Models;
 
-public partial class Role
+public partial class ModuleView
 {
     public int Id { get; set; }
 
-    public int? RoleGroupId { get; set; }
+    public string? DisplayName { get; set; }
 
-    public int? ModuleId { get; set; }
-    public string? ModuleName { get; set; }
+    public string?  ModuleName{ get; set; }
 
     public bool? Add { get; set; }
 
@@ -23,4 +22,9 @@ public partial class Role
     public bool? Export { get; set; }
     public bool? Review { get; set; }
     public bool? Comment { get; set; }
+}
+public class MyRequestModel
+{
+    public string Modules { get; set; }
+    public int RoleGroupId { get; set; }
 }

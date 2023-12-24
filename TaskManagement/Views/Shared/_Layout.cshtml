@@ -68,8 +68,8 @@
                         <ul id="dashboards" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
                             <li class="sidebar-item" id="menu-management-user"><a href="/User" class="sidebar-link">Quản lý người dùng </a></li>
                             <li class="sidebar-item" id="menu-management-department"><a href="/Department" class="sidebar-link">Quản lý phòng ban</a></li>
-                            <li class="sidebar-item" id="menu-management-role"><a class="sidebar-link">Quản lý quyền</a></li>
-                            <li class="sidebar-item" id="menu-management-position"><a class="sidebar-link">Quản lý chức vụ</a></li>
+                            <li class="sidebar-item" id="menu-management-role"><a href="/Role" class="sidebar-link">Quản lý quyền</a></li>
+                            <li class="sidebar-item" id="menu-management-position"><a href="/Position" class="sidebar-link">Quản lý chức vụ</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -234,7 +234,7 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item dropdown">
+                       @*  <li class="nav-item dropdown">
                             <a class="nav-flag dropdown-toggle" href="#" id="languageDropdown" data-toggle="dropdown">
                                 <img src="~/img/flags/us.png" alt="English">
                             </a>
@@ -256,14 +256,14 @@
                                     <span class="align-middle">Dutch</span>
                                 </a>
                             </div>
-                        </li>
+                        </li> *@
                         <li class="nav-item dropdown">
                             <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-toggle="dropdown">
                                 <i class="align-middle" data-feather="settings"></i>
                             </a>
 
                             <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-toggle="dropdown">
-                                <img src="~/img/avatars/avatar.jpg" class="avatar img-fluid rounded-circle mr-1" alt="Chris Wood"> <span class="text-dark">Admin</span>
+                                <img src="~/img/avatars/avatar.jpg" class="avatar img-fluid rounded-circle mr-1" alt="Chris Wood"> <span class="text-dark">@HttpContextAccessor.HttpContext?.Session.GetString("Username")</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" href="pages-profile.html"><i class="align-middle mr-1" data-feather="user"></i> Thông tin</a>

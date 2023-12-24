@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Quản lý nhóm quyền";
+}
+<div class="d-flex mb-1 justify-content-between">
+    <h1 class="h3 mb-3">Nhóm quyền @ViewData["roleName"]</h1>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form id="FromRoleGroup" method="post">
+                    <table class="table table-hover table-striped table-fixed">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left" class="">Tên mô đun   <br />&nbsp;</th>
+                                <th style="text-align: center" class="">
+                                    <span>Thêm</span><br /> <input type="checkbox" id="chk_All_New" class="flat" />
+                                </th>
+                                <th style="text-align: center" class="">
+                                    <span>Sửa</span><br /><input type="checkbox" id="chk_All_Edit" class="flat" />
+                                </th>
+                                <th style="text-align: center" class="">
+                                    <span>Xem</span>
+                                    <br /><input type="checkbox" id="chk_All_View" class="flat" />
+                                </th>
+                                <th style="text-align: center" class="">
+                                    <span>Xoá</span><br />
+                                    <input type="checkbox" id="chk_All_Delete"  class="flat" />
+                                </th>
+                                <th style="text-align: center" class="">
+                                    <span>Export</span><br />
+                                    <input type="checkbox" id="chk_All_Export"  class="flat" />
+                                </th>
+                                <th style="text-align: center" class="">
+                                    <span>Đánh giá</span><br />
+                                    <input type="checkbox" id="chk_All_Review" class="flat" />
+                                </th>
+                                @* <th style="text-align: center" class="">
+                                <span>Tải về</span><br />
+                                <input type="checkbox" id="chk_All_Download" class="flat" />
+                                </th> *@
+                                @*  <th style="text-align: center" class="">
+                                <span>Quyền TL</span><br />
+                                <input type="checkbox" id="chk_All_SupPermission" class="flat" />
+                                </th> *@
+
+                            </tr>
+                        </thead>
+                        <tbody style="text-align:center">
+                            <input type="hidden" id="roleGroupId" value="@ViewBag.roleGroupId" />
+                            @if (ViewBag.lstModules.Count > 0)
+                            {
+                                foreach (var module in ViewBag.lstModules)
+                                {
+
+                                    <tr>
+                                        <td align="left" class="">
+                                            <input type="hidden" value="@module.Id" name="module_@module.Id" id="module_@module.Id" />
+                                            <input type="hidden" value="@module.ModuleName" name="moduleName_@module.ModuleName" id="moduleName_@module.ModuleName" />
+                                            <a href="javascript:void(0);" id="data-@module.Id" class="link_edit_controller">
+                                                @module.DisplayName
+                                            </a>
+                                        </td>
+                                        <td class="">
+                                            <input type="checkbox" name="check_add"
+                                            @(module.Add == true ? "checked=\"checked\"" : "") />
+                                        </td>
+                                        <td class="">
+                                            <input type="checkbox" name="check_edit"
+                                            @(module.Edit == true ? "checked=\"checked\"" : "") />
+                                        </td>
+                                        <td class="">
+                                            <input type="checkbox" name="check_view"
+                                            @(module.View == true ? "checked=\"checked\"" : "") />
+                                        </td>
+                                        <td class="">
+                                            <input type="checkbox" name="check_delete"
+                                            @(module.Delete == true ? "checked=\"checked\"" : "") />
+                                        </td>
+                                        <td class="">
+                                            <input type="checkbox" name="check_export"
+                                            @(module.Export == true ? "checked=\"checked\"" : "") />
+                                        </td>
+                                        <td class="">
+                                            <input type="checkbox" name="check_review"
+                                            @(module.Review == true ? "checked=\"checked\"" : "") />
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                   
+                    <button id="saveChangeData" onclick="js_updateRoleDetail()" type="button" class="btn btn-success"> Cập nhật </button>
+                   
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/Role.js"></script>
+
+

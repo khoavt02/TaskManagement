@@ -1,18 +1,4 @@
-﻿//var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
-//connection.start().then(function () {
-//    console.log('connected to hub');
-//}).catch(function (err) {
-//    return console.error(err.toString());
-//});
-
-//function OnConnected() {
-//    var username = "admin";
-//    connection.invoke("SaveUserConnection", username).catch(function (err) {
-//        return console.error(err.toString());
-//    })
-//    console.log("SaveUserConnection")
-//}
-function js_Login() {
+﻿function js_Login() {
     var account = $('#account').val();
     var password = $('#password').val();
     var formData = new FormData();
@@ -20,14 +6,6 @@ function js_Login() {
     formData.append("password", $("#password").val());
     console.log(account, password);
     $.ajax({
-        //type: 'POST',
-        //url: "/Login/Login",
-        //data: JSON.stringify({
-        //    Account: account,
-        //    Password: password
-        //}),
-        //contentType: 'application/json, charset=utf-8',
-        //dataType: 'json',
         type: 'POST',
         url: "/Login/Login",
         contentType: false,
@@ -36,10 +14,6 @@ function js_Login() {
         data: formData,
         success: function (rp) {
             if (rp.status == true) {
-                //connection.on("OnConnected", function () {
-                //    OnConnected();
-                //});
-                console.log(rp.message)
                 window.location.href = "/Home";
                
             } else {
@@ -94,14 +68,6 @@ function js_ChangPassword() {
     formData.append("new_password", newPassword);
     formData.append("re_password", rePassword);
     $.ajax({
-        //type: 'POST',
-        //url: "/Login/Login",
-        //data: JSON.stringify({
-        //    Account: account,
-        //    Password: password
-        //}),
-        //contentType: 'application/json, charset=utf-8',
-        //dataType: 'json',
         type: 'POST',
         url: "/Login/ActionChangePassword",
         contentType: false,

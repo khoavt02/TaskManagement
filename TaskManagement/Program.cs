@@ -30,7 +30,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 app.UseSession();
-//app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<NotificationHub>("/notificationHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");

@@ -110,7 +110,7 @@ namespace TaskManagement.Controllers
         CreatedName = user != null ? user.UserName : string.Empty,
     });
                 //List<User> lstUser = _context.Users.ToList();
-                var data = (from s in _context.Users select s);
+                var data = (from s in _context.Departments select s);
                 var lstDepartment = query.Skip(offset).Take(limit).ToList();
                 if (lstDepartment.Count > 0) {
                     //return new JsonResult(new { status = true, data = lstUser });

@@ -132,6 +132,19 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.Name)
 				.HasMaxLength(250)
 				.HasColumnName("name");
+            entity.Property(e => e.CreatedBy)
+               .HasMaxLength(50)
+               .HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(50)
+                .HasColumnName("updated_by");
+            entity.Property(e => e.UpdatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_date");
+
         });
 			modelBuilder.Entity<Project>(entity =>
         {
@@ -198,14 +211,18 @@ public partial class TaskManagementContext : DbContext
             entity.ToTable("roles");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ModuleId).HasColumnName("module_id");
+            entity.Property(e => e.ModuleName)
+               .HasMaxLength(250)
+               .HasColumnName("module_name");
             entity.Property(e => e.Add).HasColumnName("add");
-            entity.Property(e => e.ModuleCode)
-                .HasMaxLength(100)
-                .HasColumnName("module_code");
             entity.Property(e => e.Edit).HasColumnName("edit");
             entity.Property(e => e.Export).HasColumnName("export");
             entity.Property(e => e.RoleGroupId).HasColumnName("role_group_id");
             entity.Property(e => e.View).HasColumnName("view");
+            entity.Property(e => e.Delete).HasColumnName("delete");
+            entity.Property(e => e.Review).HasColumnName("review");
+            entity.Property(e => e.Comment).HasColumnName("comment");
         });
 
         modelBuilder.Entity<RoleGroup>(entity =>
@@ -213,15 +230,22 @@ public partial class TaskManagementContext : DbContext
             entity.ToTable("role_group");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.DepartmentCode)
-                .HasMaxLength(50)
-                .HasColumnName("department_code");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
-            entity.Property(e => e.UserCode)
+            entity.Property(e => e.CreatedBy)
                 .HasMaxLength(50)
-                .HasColumnName("user_code");
+                .HasColumnName("created_by");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(50)
+                .HasColumnName("updated_by");
+            entity.Property(e => e.UpdatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_date");
         });
 
         modelBuilder.Entity<Task>(entity =>

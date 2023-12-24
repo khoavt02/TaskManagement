@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Quản lý nhóm quyền";
+}
+<div class="d-flex mb-1 justify-content-between">
+    <h1 class="h3 mb-3">Quản lý chức vụ</h1>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalAddPosition">+ Tạo mới</button>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table id="data-table" class="table table-striped" style="width:100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAddPosition" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới chức vụ</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="form-group">
+                    <label class="form-label" for="code">Mã chức vụ:</label>
+                    <input id="code" class="form-control" type="text" name="code" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Tên chức vụ:</label>
+                    <input id="name" class="form-control" type="text" name="name" value="">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_AddPosition()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalUpdatePosition" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa chức vụ</h5>
+                <button onclick="js_closeModalUpdate()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <input hidden id="position_id">
+                <div class="form-group">
+                    <label class="form-label" for="code_u">Mã chức vụ:</label>
+                    <input id="code_u" class="form-control" type="text" name="code_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Tên chức vụ:</label>
+                    <input id="name_u" class="form-control" type="text" name="name_u" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="js_closeModalUpdate()" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_UpdatePosition()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/Position.js"></script>
+
+

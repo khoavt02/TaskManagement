@@ -26,6 +26,11 @@ namespace TaskManagement.Hubs
                 await Clients.Client(hubConnection.ConnectionId).SendAsync("ReceivedPersonalNotification", message, username);
             }
         }
+
+        public async Task SendNotification(string userName, string message)
+        {
+            await Clients.User(userName).SendAsync("ReceiveNotification", message);
+        }
         //public async Task SendNotificationToGroup(string message, string group)
         //{
         //    var hubConnections = dbContext.HubConnections.Join(dbContext.TblUser, c => c.Username, o => o.Username, (c, o) => new { c.Username, c.ConnectionId, o.Dept }).Where(o => o.Dept == group).ToList();

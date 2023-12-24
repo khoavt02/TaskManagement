@@ -37,10 +37,12 @@ namespace TaskManagement.Controllers
 					Response.Cookies.Append("user_code", user.UserCode);
                     HttpContext.Session.SetString("Username", user.Account);
                     HttpContext.Session.SetString("user_code", user.UserCode);
+					List<Role> lstRole = _context.Roles.Where(x => x.RoleGroupId == user.Role).ToList();
+					HttpContext.Session.SetString("roles", JsonConvert.SerializeObject(lstRole));
 					//string userData = JsonConvert.SerializeObject(user);
 					//SessionHelpers.Set(_contextAccessor, userData, 10 * 365);
 					//notificationHub.SaveUserConnection("admin");
-                    return new JsonResult(new { status = true, message = "Đăng nhập thành công" });
+					return new JsonResult(new { status = true, message = "Đăng nhập thành công" });
 				}
 				else
                 {
@@ -97,9 +99,9 @@ namespace TaskManagement.Controllers
 		public IActionResult Logout()
 		{
 			Response.Clear();
-            HttpContext.Session.Remove("Username");
-            return RedirectToPage("/Login/Index");
-		}
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Login");
+        }
 
 	}
 }
