@@ -5,7 +5,7 @@
 function DisplayPersonalNotification(message, title) {
     console.log("OK");
     setTimeout(function () {
-        toastr["success"]("Thông báo", "Bạn vừa được thêm vào một dự án mới", {
+        toastr["success"](title, message, {
             positionClass: 'toast-top-right',
             closeButton: true,
             progressBar: true,
@@ -15,3 +15,4 @@ function DisplayPersonalNotification(message, title) {
 
     }, 1300);
 }
+

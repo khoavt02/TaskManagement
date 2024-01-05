@@ -32,15 +32,15 @@ namespace SignalRYoutube.SubscribeTableDependencies
         {
             if(e.ChangeType != TableDependency.SqlClient.Base.Enums.ChangeType.None)
             {
-                var notification = e.Entity;
-                if(notification.MessageType == "All")
-                {
-                    await notificationHub.SendNotificationToAll(notification.Message);
-                }
-                else if(notification.MessageType == "Personal")
-                {
-                    await notificationHub.SendNotificationToClient(notification.Message, notification.Username);
-                }
+                //var notification = e.Entity;
+                //if(notification.MessageType == "All")
+                //{
+                //    await notificationHub.SendNotificationToAll(notification.Message);
+                //}
+                //else if(notification.MessageType == "Personal")
+                //{
+                //    await notificationHub.SendNotificationToClient(notification.Message, notification.Username);
+                //}
                 //else if (notification.MessageType == "Group")
                 //{
                 //    await notificationHub.SendNotificationToGroup(notification.Message, notification.Username);

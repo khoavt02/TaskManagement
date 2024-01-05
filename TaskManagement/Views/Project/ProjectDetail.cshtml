@@ -4,141 +4,169 @@
 }
 <h1 class="h3 mb-3">Dự án</h1>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Chi tiết dự án</h5>
-            </div>
-            <div class="card-body">
-                <form id="validation-form">
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Mã dự án</label>
-                                <input type="text" class="form-control" id="project_code" name="project_code" value="@Model.ProjectCode">
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Chi tiết dự án</h5>
+                </div>
+                <div class="card-body">
+                    <form id="validation-form">
+                        <input type="hidden" id="project-id" value="@ViewBag.ProjectId" />
+                        <div class="row">
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label">Mã dự án</label>
+                                    <input type="text" class="form-control" id="project_code" name="project_code" value="@Model.ProjectCode">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Tên dự án</label>
-                                <input type="text" class="form-control" id="project_name" name="project_name" value="@Model.ProjectName">
-                            </div>
-                        </div>
-                    </div>
-                   
-                    <div class="form-group">
-                        <label class="form-label">Mô tả</label>
-                        <textarea rows="4" class="form-control" id="project_description" name="project_description">@Model.Description</textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Thời gian bắt đẩu</label>
-                                <div class="input-group date" >
-                                    @if (Model.StartTime is DateTime startTime)
-                                    {
-                                        <input type="date" id="start_date" value="@startTime.ToString("yyyy-MM-dd")" class="form-control datetimepicker-input">
-                                    }
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label">Tên dự án</label>
+                                    <input type="text" class="form-control" id="project_name" name="project_name" value="@Model.ProjectName">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Thời gian kết thúc</label>
-                                <div class="input-group date" >
-                                    @if (Model.EndTime is DateTime endTime)
-                                    {
-                                        <input type="date" id="start_date" value="@endTime.ToString("yyyy-MM-dd")" class="form-control datetimepicker-input">
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="manager">Quản lý dự án:</label>
-                                <select class="form-control select2" id="manager" data-toggle="select2">
-                                    <option value="">--Chọn quản lý dự án--</option>
-                                    @if (ViewBag.lstUsers != null)
-                                    {
-                                        foreach (var item in ViewBag.lstUsers)
-                                        {
-                                            bool isSelected = Model != null && Model.Manager.Contains(item.UserCode);
-                                            <option value="@item.UserCode" selected="@isSelected">@item.UserName</option>
-                                        }
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="department">Phòng ban thực hiện:</label>
-                                <select class="form-control select2" id="department" data-toggle="select2">
-                                    <option value="">--Chọn phòng ban--</option>
-                                    @if (ViewBag.lstDepartments != null)
-                                    {
-                                        foreach (var item in ViewBag.lstDepartments)
-                                        {
-                                            bool isSelected = Model != null && Model.Department.Contains(item.DepartmentCode);
-                                            <option value="@item.DepartmentCode" selected="@isSelected">@item.DepartmentName</option>
-                                        }
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="users">Nhân viên thực hiện:</label>
-                        <select class="form-control select2" id="users" data-toggle="select2" multiple="">
-                            <option value="">--Chọn nhân viên thực hiện--</option>
-                            @if (ViewBag.lstUsers != null)
-                            {
-                                foreach (var item in ViewBag.lstUsers)
-                                {
-                                    bool isSelected = false;
-                                    if(Model.Users != null)
-                                    {
-                                        isSelected = Model.Users.Contains(item.UserCode);
-                                    }
-                                    <option value="@item.UserCode" selected="@isSelected">@item.UserName</option>
-                                }
-                            }
-                        </select>
 
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="priority_level">Mức độ quan trọng:</label>
-                                <select class="form-control select2" id="priority_level" data-toggle="select2">
-                                    <option value="" selected="@(string.IsNullOrEmpty(Model.PriorityLevel))">--Chọn mức độ--</option>
-                                    <option value="IMPORTANT" selected="@(Model.PriorityLevel == "IMPORTANT")">Quan trọng</option>
-                                    <option value="HIGH" selected="@(Model.PriorityLevel == "HIGH")">Cao</option>
-                                    <option value="NORMAL" selected="@(Model.PriorityLevel == "NORMAL")">Bình thường</option>
-                                    <option value="LOW" selected="@(Model.PriorityLevel == "LOW")">Thấp</option>
+                        <div class="form-group">
+                            <label class="form-label">Mô tả</label>
+                            <textarea rows="4" class="form-control" id="project_description" name="project_description">@Model.Description</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="file_attachment">File đính kèm:</label>
+                            @if (!string.IsNullOrEmpty(Model.LinkFiles))
+                            {
+                                <a href="@Url.Content("~/uploads/" + Model.LinkFiles)" download>@Model.LinkFiles</a>
+                            }
+                            <input id="file_attachment" class="form-control" type="file" name="file_attachment" value="@Model.LinkFiles">
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="process-percent">Tiến độ:</label>
+                                    <input type="number" class="form-control" id="process-percent" name="process-percent" value="@Model.Process">
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label" for="status">Trạng thái:</label>
+                                <select class="form-control select2" id="status" data-toggle="select2">
+                                    <option value="" selected="@(string.IsNullOrEmpty(Model.Status))">--Chọn trạng thái--</option>
+                                    <option value="NEW" selected="@(Model.Status == "NEW")">Mới</option>
+                                    <option value="PROCESSING" selected="@(Model.Status == "PROCESSING")">Đang thực hiện</option>
+                                    <option value="COMPLETE" selected="@(Model.Status == "COMPLETE")">Hoàn thành</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="department">Điểm số:</label>
-                                <input type="number" class="form-control" id="point" name="point" value="@Model.Point">
+                        <div class="row">
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label">Thời gian bắt đẩu</label>
+                                    <div class="input-group date" >
+                                        @if (Model.StartTime is DateTime startTime)
+                                        {
+                                            <input type="date" id="start_date" value="@startTime.ToString("yyyy-MM-dd")" class="form-control datetimepicker-input">
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label">Thời gian kết thúc</label>
+                                    <div class="input-group date" >
+                                        @if (Model.EndTime is DateTime endTime)
+                                        {
+                                            <input type="date" id="end_date" value="@endTime.ToString("yyyy-MM-dd")" class="form-control datetimepicker-input">
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="d-flex">
-                        <div class="w-100">
-                            <button type="submit" onclick="js_UpdateProject()" class="btn btn-primary float-right">Chỉnh sửa</button>
+                        <div class="row">
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="manager">Quản lý dự án:</label>
+                                    <select class="form-control select2" id="manager" data-toggle="select2">
+                                        <option value="">--Chọn quản lý dự án--</option>
+                                        @if (ViewBag.lstUsers != null)
+                                        {
+                                            foreach (var item in ViewBag.lstUsers)
+                                            {
+                                                bool isSelected = Model != null && Model.Manager.Contains(item.UserCode);
+                                                <option value="@item.UserCode" selected="@isSelected">@item.UserName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="department">Phòng ban thực hiện:</label>
+                                    <select class="form-control select2" id="department" data-toggle="select2">
+                                        <option value="">--Chọn phòng ban--</option>
+                                        @if (ViewBag.lstDepartments != null)
+                                        {
+                                            foreach (var item in ViewBag.lstDepartments)
+                                            {
+                                                bool isSelected = Model != null && Model.Department.Contains(item.DepartmentCode);
+                                                <option value="@item.DepartmentCode" selected="@isSelected">@item.DepartmentName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                        <div class="form-group d-none">
+                            <label class="form-label" for="users">Nhân viên thực hiện:</label>
+                            <select class="form-control select2" id="users" data-toggle="select2" multiple="">
+                                <option value="">--Chọn nhân viên thực hiện--</option>
+                                @if (ViewBag.lstUsers != null)
+                                {
+                                    foreach (var item in ViewBag.lstUsers)
+                                    {
+                                        bool isSelected = false;
+                                        if (Model.Users != null)
+                                        {
+                                            isSelected = Model.Users.Contains(item.UserCode);
+                                        }
+                                        <option value="@item.UserCode" selected="@isSelected">@item.UserName</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="priority_level">Mức độ quan trọng:</label>
+                                    <select class="form-control select2" id="priority_level" data-toggle="select2">
+                                        <option value="" selected="@(string.IsNullOrEmpty(Model.PriorityLevel))">--Chọn mức độ--</option>
+                                        <option value="IMPORTANT" selected="@(Model.PriorityLevel == "IMPORTANT")">Quan trọng</option>
+                                        <option value="HIGH" selected="@(Model.PriorityLevel == "HIGH")">Cao</option>
+                                        <option value="NORMAL" selected="@(Model.PriorityLevel == "NORMAL")">Bình thường</option>
+                                        <option value="LOW" selected="@(Model.PriorityLevel == "LOW")">Thấp</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="department">Điểm số:</label>
+                                    <input type="number" class="form-control" id="point" name="point" value="@Model.Point">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-100">
+                                <button onclick="js_UpdateProject()" class="btn btn-primary float-right">Cập nhật</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<script src="~/js/Project.js"></script>
+}
+<script src="~/js/ProjectDetail.js"></script>
 
 

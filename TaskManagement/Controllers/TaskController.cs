@@ -104,6 +104,50 @@ namespace TaskManagement.Controllers
         }
 
         [HttpPost]
+        public JsonResult AddTaskV2(string point, string priority_level, string department,
+    string manager, string users, string end_date, string start_date,
+    string task_description, string estimate_time, string task_name, string project_id)
+        {
+            try
+            {
+                var TaskMaxId = _context.Tasks.Where(e => e.ProjectId == int.Parse(project_id)).OrderByDescending(e => e.Id).FirstOrDefault();
+                Project project = _context.Projects.Where(e => e.Id == int.Parse(project_id)).FirstOrDefault();
+                string id_task = "1";
+                if (TaskMaxId != null)
+                {
+                    id_task = TaskMaxId.Id.ToString();
+                }
+                var ProjectCode = project.ProjectCode;
+                var task = new Task()
+                {
+                    ProjectId = int.Parse(project_id),
+                    TaskCode = ProjectCode + "/" + id_task,
+                    TaskName = task_name,
+                    StartTime = DateTime.Parse(start_date),
+                    EndTime = DateTime.Parse(end_date),
+                    EstimateTime = Decimal.Parse(estimate_time),
+                    AssignedUser = users,
+                    Description = task_description,
+                    Level = priority_level,
+                    Points = int.Parse(point),
+                    Status = "NEW",
+                    ProcessPercent = 0,
+                    CreatedDate = DateTime.Now,
+                    CreatedBy = Request.Cookies["user_code"],
+
+                };
+                _context.Add(task);
+                _context.SaveChanges();
+                return new JsonResult(new { status = true, message = "Thêm mới công việc thành công!" });
+                
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
+
+        [HttpPost]
         public JsonResult AddTaskChild(IFormCollection model)
         {
             try
@@ -197,54 +241,11 @@ namespace TaskManagement.Controllers
                 return new JsonResult(new { status = false, message = "Error" + ex });
             }
         }
-        [HttpGet]
-        public JsonResult GetListDepartment(int offset, int limit)
-        {
-            try
-            {
-                var departments = _context.Departments;
-                var users = _context.Users;
-
-                var query = departments
-                            .GroupJoin(users, d => d.Mannager, u => u.UserCode, (d, u) => new { Department = d, ManagerUser = u })
-                            .SelectMany(x => x.ManagerUser.DefaultIfEmpty(), (x, d) => new { x.Department, ManagerUser = d })
-                            .GroupJoin(users, d => d.Department.CreatedBy, u => u.UserCode, (d, u) => new { d.Department, d.ManagerUser, CreatedUser = u })
-                            .SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
-                            {
-                                Id = x.Department.Id,
-                                DepartmentCode = x.Department.DepartmentCode,
-                                DepartmentName = x.Department.DepartmentName,
-                                CreatedDate = x.Department.CreatedDate,
-                                Mannager = x.Department.Mannager,
-                                Status = x.Department.Status,
-                                Manager = x.ManagerUser != null ? x.ManagerUser.UserName : string.Empty,
-                                CreatedName = user != null ? user.UserName : string.Empty,
-                            });
-                //List<User> lstUser = _context.Users.ToList();
-                var data = (from s in _context.Users select s);
-                var lstDepartment = query.Skip(offset).Take(limit).ToList();
-                if (lstDepartment.Count > 0)
-                {
-                    //return new JsonResult(new { status = true, data = lstUser });
-                    return new JsonResult(new { status = true, rows = lstDepartment, total = data.Count() });
-                }
-                else
-                {
-                    return new JsonResult(new { status = false, message = "Dữ liệu trống" });
-                }
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new { status = false, message = "Error" + ex });
-            }
-        }
-
 
 
         #region TaskDetail
         public IActionResult TaskDetail(int id)
         {
-            ViewBag.lstPositions = _context.Positons.ToList();
             ViewBag.lstDepartments = _context.Departments.ToList();
             ViewBag.lstRoles = _context.RoleGroups.ToList();
             ViewBag.lstUsers = _context.Users.ToList();
@@ -320,7 +321,22 @@ namespace TaskManagement.Controllers
                         CreatedBy = Request.Cookies["user_code"],
                         CreatedDate = DateTime.Now,
                     };
-                    Task task = _context.Tasks.Where(x => x.Id == taskProccess.TaskId).FirstOrDefault();
+					var file = model.Files["file"]; // "file" nên phù hợp với thuộc tính name của input file trong form
+					if (file != null && file.Length > 0)
+					{
+						// Lưu tệp vào một thư mục cụ thể
+						var filePath = Guid.NewGuid().ToString() + "_" + file.FileName;
+						var physicalPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", filePath);
+
+						using (var stream = new FileStream(physicalPath, FileMode.Create))
+						{
+							file.CopyTo(stream);
+						}
+
+						// Lưu đường dẫn tệp vào thuộc tính FilePath của đối tượng TaskProgress
+						taskProccess.FileAttach = filePath;
+					}
+					Task task = _context.Tasks.Where(x => x.Id == taskProccess.TaskId).FirstOrDefault();
                     if (task != null)
                     {
                         task.ProcessPercent = taskProccess.ProcessPercent;
@@ -376,8 +392,24 @@ namespace TaskManagement.Controllers
                 return new JsonResult(new { status = false, message = "Error" + ex });
             }
         }
+		[HttpGet]
+		public IActionResult DownloadFile(string fileName)
+		{
+			// Kiểm tra xem tệp có tồn tại không
+			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileName);
 
-        [HttpPost]
+			if (!System.IO.File.Exists(filePath))
+			{
+				return NotFound();
+			}
+
+			// Đọc dữ liệu từ tệp
+			var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+			// Trả về tệp dưới dạng phản hồi
+			return File(fileBytes, "text/plain", fileName);
+		}
+		[HttpPost]
         public JsonResult AddReviewTask(IFormCollection model)
         {
             try

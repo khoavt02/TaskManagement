@@ -30,6 +30,10 @@
                         <label class="form-label">Mô tả</label>
                         <textarea rows="4" class="form-control" id="project_description" name="project_description" placeholder="Nhập mô tả dự án"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label" for="file_attachment">File đính kèm:</label>
+                        <input id="file_attachment" class="form-control" type="file" name="file_attachment" value="">
+                    </div>
                     <div class="row">
                         <div class="col-12 col-xl-6">
                             <div class="form-group">
@@ -80,7 +84,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group d-none">
                         <label class="form-label" for="users">Nhân viên thực hiện:</label>
                         <select class="form-control select2" id="users" data-toggle="select2" multiple="">
                             <option value="">--Chọn nhân viên thực hiện--</option>
@@ -116,7 +120,7 @@
                     </div>
                     <div class="d-flex">
                         <div class="w-100">
-                            <button type="submit" onclick="js_AddProject()" class="btn btn-primary float-right">Tạo mới</button>
+                            <button onclick="js_AddProject()" class="btn btn-primary float-right">Tạo mới</button>
                         </div>
                     </div>
                 </form>

@@ -48,17 +48,35 @@
 
                 <ul class="sidebar-nav">
                     <li class="sidebar-item">
-                        <a href="" class="sidebar-link ">
+                        <a href="/Home" class="sidebar-link ">
                             <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
                         </a>
                     </li>
                     <li class="sidebar-item" id="menu-job">
-                        <a href="#pages" data-toggle="collapse" class="sidebar-link collapsed">
+                        <a href="#pages-task" data-toggle="collapse" class="sidebar-link collapsed">
                             <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Quản lý công việc</span>
                         </a>
-                        <ul id="pages" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
-                            <li class="sidebar-item" id="menu-job-project"><a class="sidebar-link" href="/Project">Dự án </a></li>
+                        <ul id="pages-task" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                            <li class="sidebar-item" id="menu-job-project"><a class="sidebar-link" href="/Project/ListProject">Dự án </a></li>
                             <li class="sidebar-item" id="menu-job-task"><a class="sidebar-link" href="/Task">Công việc</a></li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item" id="menu-job-statistic">
+                        <a href="#pages-statistic" data-toggle="collapse" class="sidebar-link collapsed">
+                            <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Báo cáo thống kê</span>
+                        </a>
+                        <ul id="pages-statistic" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                            <li class="sidebar-item" id="menu-job-project-statistic"><a class="sidebar-link" href="/ProjectStatistic">Theo dự án </a></li>
+                            <li class="sidebar-item" id="menu-job-task-statistic"><a class="sidebar-link" href="/TaskStatistic">Theo công việc</a></li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item" id="menu-job-user">
+                        <a href="#pages-user" data-toggle="collapse" class="sidebar-link collapsed">
+                            <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Công việc cá nhân</span>
+                        </a>
+                        <ul id="pages-user" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
+                            <li class="sidebar-item" id="menu-job-project-user"><a class="sidebar-link" href="/ProjectUser">Dự án cá nhân </a></li>
+                            <li class="sidebar-item" id="menu-job-task-user"><a class="sidebar-link" href="/TaskUser">Công việc cá nhân</a></li>
                         </ul>
                     </li>
                     <li class="sidebar-item" id="menu-management">
@@ -229,9 +247,9 @@
                                         </div>
                                     </a> *@
                                 </div>
-                                <div class="dropdown-menu-footer">
-                                    <a href="#" class="text-muted">Show all notifications</a>
-                                </div>
+                               @*  <div class="dropdown-menu-footer">
+                                    <a href="#" class="text-muted">Xem tất cả</a>
+                                </div> *@
                             </div>
                         </li>
                        @*  <li class="nav-item dropdown">
@@ -281,7 +299,7 @@
 
             <main role="main" class="content pb-3">
                 <div class="container-fluid p-0">
-                    <input type="hidden" id="hfUsername" value="@HttpContextAccessor.HttpContext?.Session.GetString("Username")" />
+                    <input type="hidden" id="hfUsername" value="@HttpContextAccessor.HttpContext?.Session.GetString("user_code")" />
                     @RenderBody()
                 </div>
             </main>
@@ -293,7 +311,7 @@
     <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js")"></script>
     <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
     <script src="@Url.Content("~/lib/microsoft/signalr/dist/browser/signalr.js")"></script>
-    <script src="@Url.Content("~/js/notification.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/js/notification.js")"></script>
     <script src="@Url.Content("~/lib/bootstrap-table/bootstrap-table.min.js")" asp-append-version="true"></script>
     <script src="@Url.Content("~/lib/font-awesome/fontawesome.min.js")" asp-append-version="true"></script>
     <script src="@Url.Content("~/lib/moment/min/moment.min.js")" asp-append-version="true"></script>

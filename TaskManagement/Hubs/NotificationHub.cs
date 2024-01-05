@@ -23,7 +23,10 @@ namespace TaskManagement.Hubs
             var hubConnections = dbContext.HubConnections.Where(con => con.Username == username).ToList();
             foreach (var hubConnection in hubConnections)
             {
-                await Clients.Client(hubConnection.ConnectionId).SendAsync("ReceivedPersonalNotification", message, username);
+                if (hubConnection != null && Clients != null)
+                {
+                    await Clients.Client(hubConnection.ConnectionId).SendAsync("ReceivedPersonalNotification", message, username);
+                }
             }
         }
 
@@ -44,33 +47,42 @@ namespace TaskManagement.Hubs
 
         public override Task OnConnectedAsync()
         {
-            Clients.Caller.SendAsync("OnConnected");
+            string connectionId = Context.ConnectionId;
+            Clients.Caller.SendAsync("OnConnected", connectionId);
             return base.OnConnectedAsync();
         }
 
         public async Task SaveUserConnection(string username)
         {
             var connectionId = Context.ConnectionId;
-            HubConnection hubConnection = new HubConnection
+            var hub = dbContext.HubConnections.Where(x => x.Username == username).FirstOrDefault();
+            if (hub != null)
             {
-                ConnectionId = connectionId,
-                Username = username
-            };
-
-            dbContext.HubConnections.Add(hubConnection);
+                hub.ConnectionId = connectionId;
+                dbContext.HubConnections.Update(hub);
+            }
+            else
+            {
+                HubConnection hubConnection = new HubConnection
+                {
+                    ConnectionId = connectionId,
+                    Username = username
+                };
+                dbContext.HubConnections.Add(hubConnection);
+            }
             await dbContext.SaveChangesAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
-        {
-            var hubConnection = dbContext.HubConnections.FirstOrDefault(con => con.ConnectionId == Context.ConnectionId);
-            if(hubConnection != null)
-            {
-                dbContext.HubConnections.Remove(hubConnection);
-                dbContext.SaveChangesAsync();
-            }
+        //public override Task OnDisconnectedAsync(Exception? exception)
+        //{
+        //    var hubConnection = dbContext.HubConnections.FirstOrDefault(con => con.ConnectionId == Context.ConnectionId);
+        //    if(hubConnection != null)
+        //    {
+        //        dbContext.HubConnections.Remove(hubConnection);
+        //        dbContext.SaveChangesAsync();
+        //    }
 
-            return base.OnDisconnectedAsync(exception);
-        }
+        //    return base.OnDisconnectedAsync(exception);
+        //}
     }
 }

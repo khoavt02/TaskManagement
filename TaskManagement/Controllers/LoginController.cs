@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using TaskManagement.Helper;
+using TaskManagement.Hubs;
 //using TaskManagement.Hubs;
 using TaskManagement.Models;
 
@@ -12,12 +15,14 @@ namespace TaskManagement.Controllers
     {
         private readonly TaskManagementContext _context;
         private readonly ILogger _logger;
-		//private readonly IHttpContextAccessor _contextAccessor;
+        //private readonly IHttpContextAccessor _contextAccessor;
         //NotificationHub notificationHub;
-        public LoginController(TaskManagementContext context)
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public LoginController(TaskManagementContext context, IHubContext<NotificationHub> hubContext)
         {
             this._context = context;
-			//this.notificationHub = notification;
+            _hubContext = hubContext;
+            //this.notificationHub = notification;
         }
         public IActionResult Index()
         {
@@ -39,10 +44,10 @@ namespace TaskManagement.Controllers
                     HttpContext.Session.SetString("user_code", user.UserCode);
 					List<Role> lstRole = _context.Roles.Where(x => x.RoleGroupId == user.Role).ToList();
 					HttpContext.Session.SetString("roles", JsonConvert.SerializeObject(lstRole));
-					//string userData = JsonConvert.SerializeObject(user);
-					//SessionHelpers.Set(_contextAccessor, userData, 10 * 365);
-					//notificationHub.SaveUserConnection("admin");
-					return new JsonResult(new { status = true, message = "Đăng nhập thành công" });
+                    //string userData = JsonConvert.SerializeObject(user);
+                    //SessionHelpers.Set(_contextAccessor, userData, 10 * 365);
+                    //notificationHub.SaveUserConnection("admin");
+                    return new JsonResult(new { status = true, message = "Đăng nhập thành công" });
 				}
 				else
                 {

@@ -1,14 +1,24 @@
-﻿
-$(function () {
+﻿$(document).ready(function () {
     $('#menu-job').addClass("active");
     $('#menu-job-project').addClass("active");
     $('.select2').select2();
+    $('#datetimepicker-date-1').datetimepicker({
+        format: 'L'
+    });
+    $('#datetimepicker-date-2').datetimepicker({
+        format: 'L'
+    });
     js_GetList();
 });
+
+//$(function () {
+   
+//});
 function js_closeModalUpdate() {
     $('#ModalUpdateDepartment').modal('hide');
 }
 function js_AddProject() {
+    console.log('zzzzzzzzz');
     var point = $('#point').val();
     var priority_level = $('#priority_level').val();
     var department = $('#department').val();
@@ -19,49 +29,66 @@ function js_AddProject() {
     var project_description = $('#project_description').val();
     var project_code = $('#project_code').val();
     var project_name = $('#project_name').val();
+    var fileInput = document.getElementById('file_attachment');
+    var file = fileInput.files[0];
     console.log(start_date, end_date)
    
-    var formData = new FormData();
-    formData.append("point", point);
-    formData.append("priority_level", priority_level);
-    formData.append("department", department);
-    formData.append("manager", manager);
-    formData.append("users", users);
-    formData.append("end_date", end_date);
-    formData.append("start_date", start_date);
-    formData.append("project_description", project_description);
-    formData.append("project_code", project_code);
-    formData.append("project_name", project_name);
+    //var formData = new FormData();
+    //formData.append("point", point);
+    //formData.append("priority_level", priority_level);
+    //formData.append("department", department);
+    //formData.append("manager", manager);
+    //formData.append("users", users);
+    //formData.append("end_date", end_date);
+    //formData.append("start_date", start_date);
+    //formData.append("project_description", project_description);
+    //formData.append("project_code", project_code);
+    //formData.append("project_name", project_name);
+    //formData.append("file", file);
     $.ajax({
         type: 'POST',
-        url: "/ProjectCreate/AddProject",
-        contentType: false,
-        processData: false,
-        cache: false,
-        data: formData,
+        url: "/ProjectCreate/AddProjectV2",
+        //contentType: false,
+        //processData: false,
+        //cache: false,
+        contentType: 'application/json',
+        dataType: "json",
+        //data: formData,
+        data: {
+            point: point,
+            priority_level: priority_level,
+            department: department,
+            manager: manager,
+            users: users,
+            end_date: end_date,
+            start_date: start_date,
+            project_description: project_description,
+            project_code: project_code,
+            project_name: project_name,
+            file: file
+        },
         success: function (rp) {
             if (rp.status == true) {
                 console.log(rp.message)
                 var message = rp.message;
-                var title = "";
+                var title = "Thông báo";
                 toastr["success"](message, title, {
                     positionClass: 'toast-top-right',
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
                 //$("#sizedModalMd").modal("hide");
                 //js_GetList();
+                window.location.href = "/Project/ListProject"
             } else {
                 var message = rp.message;
-                var title = "";
+                var title = "Thông báo";
                 toastr["error"](message, title, {
                     positionClass: 'toast-top-right',
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
             }
         }
@@ -69,6 +96,12 @@ function js_AddProject() {
 }
 
 function js_GetList() {
+    department_s = $('#deparment_f').val();
+    priority_level_s = $('#priority_level_f').val();
+    status_s = $('#status_f').val();
+    to_date = $('#to-date').val();
+    from_date = $('#from-date').val();
+    name_s = $('#name_f').val();
     var objTable = $("#table-projects");
     objTable.bootstrapTable('destroy');
     objTable.bootstrapTable({
@@ -79,6 +112,12 @@ function js_GetList() {
                 //keyword: $('#SearchAcademicLevel').val(),
                 offset: p.offset,
                 limit: p.limit,
+                name: name_s,
+                from_date: from_date,
+                to_date: to_date,
+                status: status_s,
+                priority_level: priority_level_s,
+                department_s: department_s,
             }, p);
             return param;
         },
@@ -110,7 +149,7 @@ function js_GetList() {
                 valign: 'left',
             },
             {
-                field: "department",
+                field: "departmentName",
                 title: "Phòng ban",
                 align: 'left',
                 valign: 'left',
@@ -152,7 +191,7 @@ function js_GetList() {
                 valign: 'left',
             },
             {
-                field: "endTime",
+                field: "completeTime",
                 title: "Ngày hoàn thành",
                 align: 'left',
                 valign: 'left',
@@ -171,6 +210,20 @@ function js_GetList() {
                 title: "Mức độ",
                 align: 'left',
                 valign: 'left',
+                formatter: function (value, row, index) {
+                    switch (row.priorityLevel) {
+                        case "IMPORTANT":
+                            return "Quan trọng";
+                        case "HIGH":
+                            return "Cao";
+                        case "NORMAL":
+                            return "Bình thường";
+                        case "LOW":
+                            return "Thấp";
+                        default:
+                            return ""; 
+                    }
+                }
             },
             {
                 field: "point",
@@ -209,7 +262,9 @@ function js_GetList() {
                 class: 'CssAction',
                 formatter: function (value, row, index) {
                     var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Chi tiết" href="/Project/ProjectDetail?id=' + row.id + '"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
-                            //<a href="javascript:void(0)" class=" btn btn-danger btn-sm button btnDelete" title="Xóa"><i class="align-middle fas fa-fw fa-trash-alt"></i></a>'
+                    if (row.linkFiles != null) {
+                        action += '<a class=" btn btn-success btn-sm ml-1" href="/uploads/' + row.linkFiles + '"  download target="_blank" title="File đính kèm"><i class="align-middle fas fa-fw fa-file-alt"></i></a>'
+                    }
                     return action;
                 },
                 events: {
@@ -257,21 +312,42 @@ function js_GetList() {
     })
 }
 
-function js_UpdateDepartment() {
-    var name = $('#name_u').val();
-    var code = $('#code_u').val();
-    var management = $('#management_u').val();
-    var status = $('#status_u').val();
-    var id = $('#department_id').val();
+function js_UpdateProject() {
+    var id = $('#project-id').val();
+    var point = $('#point').val();
+    var status = $('#status').val();
+    var process = $('#process-percent').val();
+    var priority_level = $('#priority_level').val();
+    var department = $('#department').val();
+    var manager = $('#manager').val();
+    var users = $('#users').val();
+    var end_date = $('#end_date').val();
+    var start_date = $('#start_date').val();
+    var project_description = $('#project_description').val();
+    var project_code = $('#project_code').val();
+    var project_name = $('#project_name').val();
+    var fileInput = document.getElementById('file_attachment');
+    var file = fileInput.files[0];
+    console.log(start_date, end_date)
+
     var formData = new FormData();
-    formData.append("name", name);
-    formData.append("code", code);
-    formData.append("management", management);
-    formData.append("status", status);
     formData.append("id", id);
+    formData.append("point", point);
+    formData.append("status", status);
+    formData.append("process", process);
+    formData.append("priority_level", priority_level);
+    formData.append("department", department);
+    formData.append("manager", manager);
+    formData.append("users", users);
+    formData.append("end_date", end_date);
+    formData.append("start_date", start_date);
+    formData.append("project_description", project_description);
+    formData.append("project_code", project_code);
+    formData.append("project_name", project_name);
+    formData.append("file", file);
     $.ajax({
         type: 'POST',
-        url: "/Department/UpdateDepartment",
+        url: "/Project/UpdateProject",
         contentType: false,
         processData: false,
         cache: false,
@@ -280,25 +356,24 @@ function js_UpdateDepartment() {
             if (rp.status == true) {
                 console.log(rp.message)
                 var message = rp.message;
-                var title = "";
+                var title = "Thông báo";
                 toastr["success"](message, title, {
                     positionClass: 'toast-top-right',
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
-                $("#ModalUpdateDepartment").modal("hide");
-                js_GetList();
+                //$("#sizedModalMd").modal("hide");
+                //js_GetList();
+                window.location.href = "/Project/ListProject"
             } else {
                 var message = rp.message;
-                var title = "";
+                var title = "Thông báo";
                 toastr["error"](message, title, {
                     positionClass: 'toast-top-right',
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
             }
         }

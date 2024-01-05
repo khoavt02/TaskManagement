@@ -58,9 +58,42 @@ function js_GetList() {
             {
                 field: "fileAttach",
                 title: "File",
-                align: 'left',
-                valign: 'left',
+                align: 'center',
+                valign: 'center',
+                formatter: function (value, row, index) {
+                    console.log(row.fileAttach);
+                    var action = '';
+                    if (row.fileAttach != null) {
+                        action = '<a download target="_blank" href="/uploads/' + row.fileAttach + '" class=" btn btn-primary btn-sm btnDowload" title="Tải file">Download file</a>'
+                    }
+                    return action;
+                },
+                events: {
+                    'click .btnDowload': function (e, value, row, index) {
+                       
+                        //$.ajax({
+                        //    type: 'Get',
+                        //    url: '/Task/DownloadFile',
+                        //    data: {
+                        //        fileName: row.fileAttach
+                        //    },
+                        //    success: function (rp) {
+                        //        console.log("Thành công");
+                        //    },
+                        //    error: function (error) {
+                        //        console.error('Error downloading file:', error);
+                        //    }
+                        //})
 
+                        //var fileName = '/uploads/'+ row.fileAttach;
+                        //console.log(fileName);
+                        // Tạo đường dẫn trực tiếp đến tệp
+                        //var fileUrl = fileName;
+
+                        // Thực hiện tải về bằng cách chuyển hướng trình duyệt đến đường dẫn tệp
+                        //window.location.href = fileUrl;
+                    },
+                }
             },
             {
                 field: "createdDate",
@@ -139,19 +172,29 @@ function js_GetList() {
         },
     })
 }
+function removeGuidFromFileName(fileNameWithGuid) {
+    // Loại bỏ GUID từ tên tệp
+    var parts = fileNameWithGuid.split('_');
+    parts.shift(); // Loại bỏ phần GUID
+    var originalFileName = parts.join('_');
 
+    return originalFileName;
+}
 function js_AddTaskProccesss() {
     var id = $('#task_id').val();
     var project_id = $('#project_id').val();
     var proccess = $('#proccess_percent').val();
     var estimate = $('#proccess_estimate').val();
     var description = $('#proccess_description').val();
+    var fileInput = document.getElementById('proccess_file');
+    var file = fileInput.files[0];
     var formData = new FormData();
     formData.append("id", id);
     formData.append("project_id", project_id);
     formData.append("proccess", proccess);
     formData.append("estimate", estimate);
     formData.append("description", description);
+    formData.append("file", file);
     $.ajax({
         type: 'POST',
         url: "/Task/AddProccessTask",
@@ -169,9 +212,8 @@ function js_AddTaskProccesss() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
-                uploadFile();
+                //uploadFile();
                 $("#ModalAddProccess").modal("hide");
                 js_GetList();
                 window.location.reload();
@@ -183,7 +225,6 @@ function js_AddTaskProccesss() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
             }
         }

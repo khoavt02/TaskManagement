@@ -1,6 +1,6 @@
 ﻿$(function () {
-    $('#menu-management').addClass("active");
-    $('#menu-management-department').addClass("active");
+    $('#menu-job').addClass("active");
+    $('#menu-job-task').addClass("active");
     $('.select2').select2();
     $('#datetimepicker-date-1').datetimepicker({
         format: 'L'
@@ -8,6 +8,7 @@
     $('#datetimepicker-date-2').datetimepicker({
         format: 'L'
     });
+   
     js_GetList();
 });
 function closeAllModals() {

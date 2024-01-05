@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Không có quyền truy cập";
+}
+<body>
+	<main class="main d-flex w-100">
+		<div class="container d-flex flex-column">
+			<div class="row h-100">
+				<div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+					<div class="d-table-cell align-middle">
+
+						<div class="text-center">
+							<h1 class="display-1 font-weight-bold">403</h1>
+							<p class="h1 text-danger">Không có quyền truy cập.</p>
+							<p class="h2 font-weight-normal mt-3 mb-4">Ban không có quyền truy cập vào trang này. Vui lòng liên hệ với admin để được cấp quyền!</p>
+							<a href="" onclick="goBack()" class="btn btn-primary btn-lg">Quay lại</a>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+</body>
+<script>
+	// Quay lại trang trước
+	function goBack() {
+		window.history.back();
+	}
+</script>
+

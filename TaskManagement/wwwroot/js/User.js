@@ -287,3 +287,20 @@ function js_UpdateUser() {
     })
 }
 
+
+function js_sentNoti() {
+    $.ajax({
+        type: "POST",
+        url: "/Home/SentNoti", // Replace ControllerName with the actual name of your controller
+        success: function (response) {
+            if (response.status === true) {
+                console.log("Notification sent successfully: " + response.message);
+            } else {
+                console.error("Error sending notification: " + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX error:", xhr, status, error);
+        }
+    });
+}

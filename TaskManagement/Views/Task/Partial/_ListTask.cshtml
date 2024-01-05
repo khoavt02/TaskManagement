@@ -28,7 +28,7 @@
                         {
                             if (item.Status == "NEW")
                             {
-                                <div class="card mb-3 bg-light cursor-grab border">
+                                <div class="card mb-3 bg-light cursor-grab border draggable-item" data-item-id="@item.Id">
                                     <div class="card-body p-3">
                                         <div class="float-right mr-n2">
                                             <label class="custom-control custom-checkbox">
@@ -241,3 +241,23 @@
         </div>
     </div>
 </div>
+<script>
+    $(function () {
+        var drake = dragula([
+            document.querySelector("#tasks-upcoming"),
+            document.querySelector("#tasks-progress"),
+            document.querySelector("#tasks-hold"),
+            document.querySelector("#tasks-completed")
+        ]);
+
+        drake.on('drop', function (el, target, source, sibling) {
+            // Lấy thông tin cần thiết từ phần tử và các container
+            var itemId = el.dataset.itemId;
+            var sourceColumnId = source.id;
+            var targetColumnId = target.id;
+            console.log(itemId, sourceColumnId, targetColumnId)
+        });
+    });
+
+   
+</script>

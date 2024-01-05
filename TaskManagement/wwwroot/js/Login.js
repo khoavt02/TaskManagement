@@ -1,4 +1,18 @@
-﻿function js_Login() {
+﻿//$(function () {
+//    connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+
+//    connection.on("LoginComplete", function () {
+//        console.log("Login completed");
+//        // Thực hiện các bước khác của đăng nhập, bao gồm thiết lập kết nối SignalR
+//    });
+
+//    connection.start().then(function () {
+//        console.log("SignalR connected");
+//    }).catch(function (err) {
+//        console.error(err.toString());
+//    });
+//});
+function js_Login() {
     var account = $('#account').val();
     var password = $('#password').val();
     var formData = new FormData();

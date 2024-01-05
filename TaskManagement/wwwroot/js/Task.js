@@ -1,6 +1,6 @@
 ﻿$(function () {
-    $('#menu-management').addClass("active");
-    $('#menu-management-department').addClass("active");
+    $('#menu-job').addClass("active");
+    $('#menu-job-task').addClass("active");
     $('.select2').select2();
     $('#datetimepicker-date-1').datetimepicker({
         format: 'L'
@@ -25,26 +25,40 @@ function js_AddTask() {
     var estimate_time = $('#estimate_time').val();
     var task_name = $('#task_name').val();
     var project_id = $('#project').val();
-
-    var formData = new FormData();
-    formData.append("point", point);
-    formData.append("priority_level", priority_level);
-    formData.append("department", department);
-    formData.append("manager", manager);
-    formData.append("assigned_user", users);
-    formData.append("end_date", end_date);
-    formData.append("start_date", start_date);
-    formData.append("task_description", task_description);
-    formData.append("estimate_time", estimate_time);
-    formData.append("task_name", task_name);
-    formData.append("project_id", project_id);
+   
+    //var formData = new FormData();
+    //formData.append("point", point);
+    //formData.append("priority_level", priority_level);
+    //formData.append("department", department);
+    //formData.append("manager", manager);
+    //formData.append("assigned_user", users);
+    //formData.append("end_date", end_date);
+    //formData.append("start_date", start_date);
+    //formData.append("task_description", task_description);
+    //formData.append("estimate_time", estimate_time);
+    //formData.append("task_name", task_name);
+    //formData.append("project_id", project_id);
     $.ajax({
         type: 'POST',
-        url: "/Task/AddTask",
-        contentType: false,
-        processData: false,
-        cache: false,
-        data: formData,
+        url: "/Task/AddTaskV2",
+        dataType: "json",
+        //contentType: false,
+        //processData: false,
+        //cache: false,
+        //contentType: 'application/json', // Thêm kiểu dữ liệu
+        data: {
+            point: point,
+            priority_level: priority_level,
+            department: department,
+            manager: manager,
+            users: users,
+            end_date: end_date,
+            start_date: start_date,
+            task_description: task_description,
+            estimate_time: estimate_time,
+            task_name: task_name,
+            project_id: project_id
+        }, // Chuyển đối tượng thành JSON
         success: function (rp) {
             if (rp.status == true) {
                 console.log(rp.message)
@@ -55,10 +69,10 @@ function js_AddTask() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
                 //$("#sizedModalMd").modal("hide");
                 //js_GetList();
+                window.location.href = "/Task/ListTask";
             } else {
                 var message = rp.message;
                 var title = "";
@@ -67,9 +81,14 @@ function js_AddTask() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
             }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('AJAX Error:', textStatus, errorThrown);
+        },
+        complete: function () {
+            console.log('AJAX Complete');
         }
     })
 }
@@ -460,7 +479,6 @@ function js_AddTaskReview() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
                 $("#ModalAddReview").modal("hide");
                 js_GetList();
@@ -472,7 +490,6 @@ function js_AddTaskReview() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    timeOut: 3000
                 });
             }
         }

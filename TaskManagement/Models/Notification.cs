@@ -9,7 +9,8 @@ namespace TaskManagement.Models
         public int Id { get; set; }
         public string Username { get; set; } = null!;
         public string Message { get; set; } = null!;
-        public string MessageType { get; set; } = null!;
+        public string Link { get; set; } = null!;
+        public bool IsRead { get; set; }
         public DateTime NotificationDateTime { get; set; }
     }
 }

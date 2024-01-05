@@ -3,7 +3,10 @@
 }
 <a href="/ProjectCreate" class="btn btn-primary float-right mt-n1"><i class="fas fa-plus"></i> Tạo mới</a>
 <h1 class="h3 mb-3">Dự án</h1>
-
+<nav class="nav nav-pills flex-column flex-sm-row my-2">
+    <a class="flex-sm-fill text-sm-center nav-link col-1 active" aria-current="page" href="/Project/ListProject"><i class="align-middle mr-2" data-feather="list"></i></a>
+    <a class="flex-sm-fill text-sm-center nav-link col-1" href="/Project"><i class="align-middle mr-2" data-feather="grid"></i></a>
+</nav>
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -13,17 +16,17 @@
                         <div class="form-group">
                             <label class="form-label">Tên/ Mã dự án</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Nhập tên hoặc mã dự án">
+                                <input type="text" id="name_f" class="form-control" placeholder="Nhập tên hoặc mã dự án">
                             </div>
                         </div>
                     </div>
                     <div class="col-6 col-xl-3">
                         <div class="form-group">
                             <label class="form-label">Từ ngày</label>
-                            <div class="input-group date" id="datetimepicker-minimum" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker-minimum">
-                                <div class="input-group-append" data-target="#datetimepicker-minimum" data-toggle="datetimepicker">
-                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            <div class="input-group date" id="datetimepicker-date-1" data-target-input="nearest">
+                                <input type="text" id="from-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-1">
+                                <div class="input-group-append" data-target="#datetimepicker-date-1" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
                                 </div>
                             </div>
                         </div>
@@ -31,32 +34,34 @@
                     <div class="col-6 col-xl-3">
                         <div class="form-group">
                             <label class="form-label">Đến ngày</label>
-                            <div class="input-group date" id="datetimepicker-date" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker-date">
-                                <div class="input-group-append" data-target="#datetimepicker-date" data-toggle="datetimepicker">
-                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            <div class="input-group date" id="datetimepicker-date-2" data-target-input="nearest">
+                                <input type="text" id="to-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-2">
+                                <div class="input-group-append" data-target="#datetimepicker-date-2" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-6 col-xl-3">
                         <div class="form-group">
                             <label class="form-label">Trạng thái</label>
-                            <select class="form-control select2" id="status" data-toggle="select2">
+                            <select class="form-control select2" id="status_f" data-toggle="select2">
                                 <option value="">Tất cả</option>
                                 <option value="NEW">Chưa thực hiện</option>
                                 <option value="PROCESSING">Đang thực hiện</option>
                                 <option value="COMPLETE">Hoàn thành</option>
-                                <option value="EVULATED">Đã đánh giá</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-6 col-xl-3">
                         <div class="form-group">
                             <label class="form-label">Mức độ</label>
-                            <select class="form-control select2" id="priority_level" data-toggle="select2">
+                            <select class="form-control select2" id="priority_level_f" data-toggle="select2">
                                 <option value="">Tất cả</option>
                                 <option value="IMPORTANT">Quan trọng</option>
                                 <option value="HIGH">Cao</option>
@@ -67,9 +72,16 @@
                     </div>
                     <div class="col-6 col-xl-3">
                         <div class="form-group">
-                            <label class="form-label">Người tạo</label>
-                            <select class="form-control select2" id="priority_level" data-toggle="select2">
+                            <label class="form-label">Phòng ban</label>
+                            <select class="form-control select2" id="deparment_f" data-toggle="select2">
                                 <option value="">Tất cả</option>
+                                @if (ViewBag.lstDepartments != null)
+                                {
+                                    foreach (var item in ViewBag.lstDepartments)
+                                    {
+                                        <option value="@item.DepartmentCode">@item.DepartmentName</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>

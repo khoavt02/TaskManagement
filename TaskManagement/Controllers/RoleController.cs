@@ -26,7 +26,7 @@ namespace TaskManagement.Controllers
         public IActionResult Index()
 		{
             bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Role", "View");
-            if (!hasPermission) return RedirectToAction("Index", "Home");
+            if (!hasPermission) return RedirectToAction("Author", "Home");
             return View();
 		}
 		[HttpPost]

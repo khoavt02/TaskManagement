@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SignalRYoutube.SubscribeTableDependencies;
 using TaskManagement.Hubs;
 using TaskManagement.MiddlewareExtensions;
@@ -11,12 +11,24 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 var provider = builder.Services.BuildServiceProvider();
 var config = provider.GetService<IConfiguration>();
-builder.Services.AddDbContext<TaskManagementContext>(item => item.UseSqlServer(config.GetConnectionString("Database")), ServiceLifetime.Singleton);
+builder.Services.AddDbContext<TaskManagementContext>(item => item.UseSqlServer(config.GetConnectionString("Database")), ServiceLifetime.Scoped);
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-//builder.Services.AddScoped<NotificationHub>();
+builder.Services.AddScoped<NotificationHub>();
 //builder.Services.AddSingleton<SubscribeNotificationTableDependency>();
+// Thêm Cors vào services
+builder.Services.AddCors();
+
+// Cấu hình Cors trong Configure
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
+//app.UseCors(options =>
+//{
+//    options.AllowAnyOrigin()
+//           .AllowAnyMethod()
+//           .AllowAnyHeader();
+//});
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

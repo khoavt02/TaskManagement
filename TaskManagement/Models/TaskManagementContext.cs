@@ -67,7 +67,8 @@ public partial class TaskManagementContext : DbContext
         {
             entity.ToTable("notification");
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Username)
+			entity.Property(e => e.IsRead).HasColumnName("is_read");
+			entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .HasColumnName("user_name");
             entity.Property(e => e.NotificationDateTime)
@@ -76,10 +77,10 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.Message)
                 .HasMaxLength(1000)
                 .HasColumnName("message");
-            entity.Property(e => e.MessageType)
-                .HasMaxLength(50)
-                .HasColumnName("message_type");
-        });
+			entity.Property(e => e.Link)
+				.HasMaxLength(50)
+				.HasColumnName("link");
+		});
 
         modelBuilder.Entity<HubConnection>(entity =>
         {
@@ -171,7 +172,7 @@ public partial class TaskManagementContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("end_time");
             entity.Property(e => e.LinkFiles)
-                .HasMaxLength(500)
+                .HasMaxLength(1000)
                 .HasColumnName("link_files");
             entity.Property(e => e.Manager)
                 .HasMaxLength(50)
@@ -301,7 +302,10 @@ public partial class TaskManagementContext : DbContext
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("update_date");
-        });
+			entity.Property(e => e.LinkFiles)
+				.HasMaxLength(500)
+				.HasColumnName("link_files");
+		});
 
         modelBuilder.Entity<TaskEvaluate>(entity =>
         {
