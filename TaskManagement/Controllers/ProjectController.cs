@@ -176,7 +176,7 @@ namespace TaskManagement.Controllers
                     query = query.Where(x => x.Department == department_s);
                 }
                 var data = (from s in _context.Users select s);
-                var lstProject = query.Skip(offset).Take(limit).ToList();
+                var lstProject = query.OrderByDescending(x => x.CreatedDate).Skip(offset).Take(limit).ToList();
                 if (lstProject.Count > 0)
                 {
                     //return new JsonResult(new { status = true, data = lstUser });
@@ -219,59 +219,42 @@ namespace TaskManagement.Controllers
                 var projects = _context.Projects;
                 var users = _context.Users;
 
-                var query = projects
-    .GroupJoin(users, d => d.Manager, u => u.UserCode, (d, u) => new { Project = d, Manager = u })
-    .SelectMany(x => x.Manager.DefaultIfEmpty(), (x, d) => new { x.Project, Manager = d })
-    .GroupJoin(users, d => d.Project.CreatedBy, u => u.UserCode, (d, u) => new { d.Project, d.Manager, CreatedUser = u })
-    .SelectMany(x => x.CreatedUser.DefaultIfEmpty(), (x, user) => new
-    {
-        Id = x.Project.Id,
-        UpdatedBy = x.Project.UpdatedBy,
-        UpdatedDate = x.Project.UpdatedDate,
-        CreatedBy = x.Project.CreatedBy,
-        CreatedDate = x.Project.CreatedDate,
-        Status = x.Project.Status,
-        Point = x.Project.Point,
-        PriorityLevel = x.Project.PriorityLevel,
-        MembersQuantity = x.Project.MembersQuantity,
-        Description = x.Project.Description,
-        Users = x.Project.Users,
-        Department = x.Project.Department,
-        Manager = x.Project.Manager,
-        Process = x.Project.Process,
-        EndTime = x.Project.EndTime,
-        StartTime = x.Project.StartTime,
-        ProjectName = x.Project.ProjectName,
-        ProjectCode = x.Project.ProjectCode,
-        ManagerName = x.Manager != null ? x.Manager.UserName : string.Empty,
-        CreatedName = user != null ? user.UserName : string.Empty,
-    });
-                //List<User> lstUser = _context.Users.ToList();
-                var data = (from s in _context.Users select s);
-                var listTaskView = query.Select(project => new ProjectView
-                {
-                    Id = project.Id,
-                    ProjectCode = project.ProjectCode,
-                    ProjectName = project.ProjectName,
-                    StartTime = project.StartTime,
-                    EndTime = project.EndTime,
-                    Manager = project.Manager, // Assuming Manager is a navigation property in your Project entity
-                    Department = project.Department,
-                    Users = project.Users,
-                    Description = project.Description,
-                    MembersQuantity = project.MembersQuantity,
-                    PriorityLevel = project.PriorityLevel,
-                    Point = project.Point,
-                    Process = project.Process,
-                    Status = project.Status,
-                    CreatedDate = project.CreatedDate,
-                    CreatedBy = project.CreatedBy,
-                    UpdatedDate = project.UpdatedDate,
-                    UpdatedBy = project.UpdatedBy,
-                    CreatedName = project.CreatedName,
-                    ManagerName = project.ManagerName
-                }).ToList();
-                return PartialView("~/Views/Project/Partial/_ListProject.cshtml", listTaskView);
+                var query = from project in _context.Projects
+                            join manager in _context.Users on project.Manager equals manager.UserCode into managerGroup
+                            from manager in managerGroup.DefaultIfEmpty()
+                            join creator in _context.Users on project.CreatedBy equals creator.UserCode into creatorGroup
+                            from creator in creatorGroup.DefaultIfEmpty()
+                            join department in _context.Departments on project.Department equals department.DepartmentCode into departmentGroup
+                            from department in departmentGroup.DefaultIfEmpty()
+                            select new ProjectView
+                            {
+                                Id = project.Id,
+                                UpdatedBy = project.UpdatedBy,
+                                UpdatedDate = project.UpdatedDate,
+                                CreatedBy = project.CreatedBy,
+                                CreatedDate = project.CreatedDate,
+                                Status = project.Status,
+                                Point = project.Point,
+                                PriorityLevel = project.PriorityLevel,
+                                MembersQuantity = project.MembersQuantity,
+                                Description = project.Description,
+                                Users = project.Users,
+                                Department = project.Department,
+                                DepartmentName = department != null ? department.DepartmentName : string.Empty,
+                                Manager = project.Manager,
+                                Process = project.Process,
+                                EndTime = (DateTime)project.EndTime,
+                                StartTime = (DateTime)project.StartTime,
+                                CompleteTime = project.CompleteTime,
+                                ProjectName = project.ProjectName,
+                                ProjectCode = project.ProjectCode,
+                                LinkFiles = project.LinkFiles,
+                                ManagerName = manager != null ? manager.UserName : string.Empty,
+                                CreatedName = creator != null ? creator.UserName : string.Empty,
+                            };
+                var listProjectView = new List<ProjectView>();
+                listProjectView = query.OrderByDescending(x => x.CreatedDate).ToList();
+                return PartialView("~/Views/Project/Partial/_ListProject.cshtml", listProjectView);
             }
             catch (Exception ex)
             {
@@ -379,5 +362,171 @@ namespace TaskManagement.Controllers
                 return new JsonResult(new { status = false, message = "Error" + ex });
             }
         }
+
+        #region Dự án của tôi
+
+        public IActionResult ListProjectUser()
+        {
+            ViewBag.lstPositions = _context.Positons.ToList();
+            ViewBag.lstDepartments = _context.Departments.ToList();
+            ViewBag.lstRoles = _context.RoleGroups.ToList();
+            ViewBag.lstUsers = _context.Users.ToList();
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetListProjectUser(int offset, int limit, string name, string from_date, string to_date, string status, string priority_level, string department_s)
+        {
+            try
+            {
+                var projects = _context.Projects;
+                var users = _context.Users;
+                var query = from project in _context.Projects
+                            join manager in _context.Users on project.Manager equals manager.UserCode into managerGroup
+                            from manager in managerGroup.DefaultIfEmpty()
+                            join creator in _context.Users on project.CreatedBy equals creator.UserCode into creatorGroup
+                            from creator in creatorGroup.DefaultIfEmpty()
+                            join department in _context.Departments on project.Department equals department.DepartmentCode into departmentGroup
+                            from department in departmentGroup.DefaultIfEmpty()
+                            select new
+                            {
+                                Id = project.Id,
+                                UpdatedBy = project.UpdatedBy,
+                                UpdatedDate = project.UpdatedDate,
+                                CreatedBy = project.CreatedBy,
+                                CreatedDate = project.CreatedDate,
+                                Status = project.Status,
+                                Point = project.Point,
+                                PriorityLevel = project.PriorityLevel,
+                                MembersQuantity = project.MembersQuantity,
+                                Description = project.Description,
+                                Users = project.Users,
+                                Department = project.Department,
+                                DepartmentName = department != null ? department.DepartmentName : string.Empty,
+                                Manager = project.Manager,
+                                Process = project.Process,
+                                EndTime = project.EndTime,
+                                StartTime = project.StartTime,
+                                CompleteTime = project.CompleteTime,
+                                ProjectName = project.ProjectName,
+                                ProjectCode = project.ProjectCode,
+                                LinkFiles = project.LinkFiles,
+                                ManagerName = manager != null ? manager.UserName : string.Empty,
+                                CreatedName = creator != null ? creator.UserName : string.Empty,
+                            };
+
+                //List<User> lstUser = _context.Users.ToList();
+                if (name != null)
+                {
+                    query = query.Where(x => x.ProjectName.Contains(name) || x.ProjectCode.Contains(name));
+                }
+
+                if (status != null)
+                {
+                    query = query.Where(x => x.Status == status);
+                }
+                if (priority_level != null)
+                {
+                    query = query.Where(x => x.PriorityLevel == priority_level);
+                }
+                if (from_date != null && to_date != null)
+                {
+                    DateTime parsedFromDate = DateTime.ParseExact(from_date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    DateTime parsedToDate = DateTime.ParseExact(to_date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    query = query.Where(x => (x.StartTime >= parsedFromDate && x.StartTime <= parsedToDate) ||
+                         (x.EndTime >= parsedFromDate && x.EndTime <= parsedToDate));
+                }
+                if (department_s != null)
+                {
+                    query = query.Where(x => x.Department == department_s);
+                }
+                var userCode = HttpContext.Session.GetString("user_code");
+                query = query.Where(x => x.Users != null)
+                              .ToList()
+                              .Where(x => x.Users.Split(',').Any(user => user.Equals(userCode)))
+                              .AsQueryable();
+
+                var data = (from s in _context.Users select s);
+                var lstProject = query.OrderByDescending(x => x.CreatedDate).Skip(offset).Take(limit).ToList();
+                if (lstProject.Count > 0)
+                {
+                    //return new JsonResult(new { status = true, data = lstUser });
+                    return new JsonResult(new { status = true, rows = lstProject, total = query.Count() });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Dữ liệu trống" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { status = false, message = "Error" + ex });
+            }
+        }
+
+        public IActionResult ProjectKabanUser()
+        {
+            ViewBag.lstPositions = _context.Positons.ToList();
+            ViewBag.lstDepartments = _context.Departments.ToList();
+            ViewBag.lstRoles = _context.RoleGroups.ToList();
+            ViewBag.lstUsers = _context.Users.ToList();
+            return View();
+        }
+        [HttpGet]
+        public PartialViewResult GetListProjectKabanUser()
+        {
+            try
+            {
+                var projects = _context.Projects;
+                var users = _context.Users;
+
+                var query = from project in _context.Projects
+                            join manager in _context.Users on project.Manager equals manager.UserCode into managerGroup
+                            from manager in managerGroup.DefaultIfEmpty()
+                            join creator in _context.Users on project.CreatedBy equals creator.UserCode into creatorGroup
+                            from creator in creatorGroup.DefaultIfEmpty()
+                            join department in _context.Departments on project.Department equals department.DepartmentCode into departmentGroup
+                            from department in departmentGroup.DefaultIfEmpty()
+                            select new ProjectView
+                            {
+                                Id = project.Id,
+                                UpdatedBy = project.UpdatedBy,
+                                UpdatedDate = project.UpdatedDate,
+                                CreatedBy = project.CreatedBy,
+                                CreatedDate = project.CreatedDate,
+                                Status = project.Status,
+                                Point = project.Point,
+                                PriorityLevel = project.PriorityLevel,
+                                MembersQuantity = project.MembersQuantity,
+                                Description = project.Description,
+                                Users = project.Users,
+                                Department = project.Department,
+                                DepartmentName = department != null ? department.DepartmentName : string.Empty,
+                                Manager = project.Manager,
+                                Process = project.Process,
+                                EndTime = (DateTime)project.EndTime,
+                                StartTime = (DateTime)project.StartTime,
+                                CompleteTime = project.CompleteTime,
+                                ProjectName = project.ProjectName,
+                                ProjectCode = project.ProjectCode,
+                                LinkFiles = project.LinkFiles,
+                                ManagerName = manager != null ? manager.UserName : string.Empty,
+                                CreatedName = creator != null ? creator.UserName : string.Empty,
+                            };
+                var listProjectView = new List<ProjectView>();
+                var userCode = HttpContext.Session.GetString("user_code");
+                query = query.Where(x => x.Users != null)
+                              .ToList()
+                              .Where(x => x.Users.Split(',').Any(user => user.Equals(userCode)))
+                              .AsQueryable();
+                listProjectView = query.OrderByDescending(x => x.CreatedDate).ToList();
+                return PartialView("~/Views/Project/Partial/_ListProject.cshtml", listProjectView);
+            }
+            catch (Exception ex)
+            {
+                return PartialView("~/Views/Project/Partial/_ListProject.cshtml");
+            }
+        }
+        #endregion
     }
 }

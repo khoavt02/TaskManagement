@@ -168,7 +168,7 @@ function js_GetList() {
     objTable.bootstrapTable('destroy');
     objTable.bootstrapTable({
         method: 'Get',
-        url: '/Task/GetListTask',
+        url: '/Task/GetListTaskUser',
         queryParams: function (p) {
             var param = $.extend(true, {
                 //keyword: $('#SearchAcademicLevel').val(),

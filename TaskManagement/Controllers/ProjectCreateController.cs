@@ -129,8 +129,7 @@ namespace TaskManagement.Controllers
 						{
 							await _hubContext.Clients.Client(hubConnectionsMa.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Bạn được giao làm quản lý một dự án mới!");
 						}
-						
-						return new JsonResult(new { status = true, message = "Thêm mới dự án thành công!" });
+                        return new JsonResult(new { status = true, message = "Thêm mới dự án thành công!" });
 					}
 					else
 					{

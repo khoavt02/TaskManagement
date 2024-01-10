@@ -1,0 +1,192 @@
+﻿@{
+    ViewData["Title"] = "Dự án của tôi";
+}
+<h1 class="h3 mb-3">Dự án</h1>
+<nav class="nav nav-pills flex-column flex-sm-row my-2">
+    <a class="flex-sm-fill text-sm-center nav-link col-1 active" aria-current="page" href="/Project/ListProject"><i class="align-middle mr-2" data-feather="list"></i></a>
+    <a class="flex-sm-fill text-sm-center nav-link col-1" href="/Project/ProjectKabanUser"><i class="align-middle mr-2" data-feather="grid"></i></a>
+</nav>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Tên/ Mã dự án</label>
+                            <div class="input-group">
+                                <input type="text" id="name_f" class="form-control" placeholder="Nhập tên hoặc mã dự án">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Từ ngày</label>
+                            <div class="input-group date" id="datetimepicker-date-1" data-target-input="nearest">
+                                <input type="text" id="from-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-1">
+                                <div class="input-group-append" data-target="#datetimepicker-date-1" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Đến ngày</label>
+                            <div class="input-group date" id="datetimepicker-date-2" data-target-input="nearest">
+                                <input type="text" id="to-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-2">
+                                <div class="input-group-append" data-target="#datetimepicker-date-2" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-control select2" id="status_f" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="NEW">Chưa thực hiện</option>
+                                <option value="PROCESSING">Đang thực hiện</option>
+                                <option value="COMPLETE">Hoàn thành</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Mức độ</label>
+                            <select class="form-control select2" id="priority_level_f" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                <option value="IMPORTANT">Quan trọng</option>
+                                <option value="HIGH">Cao</option>
+                                <option value="NORMAL">Bình thường</option>
+                                <option value="LOW">Thấp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Phòng ban</label>
+                            <select class="form-control select2" id="deparment_f" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                @if (ViewBag.lstDepartments != null)
+                                {
+                                    foreach (var item in ViewBag.lstDepartments)
+                                    {
+                                        <option value="@item.DepartmentCode">@item.DepartmentName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <table id="table-projects" class="table table-striped" style="width:100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sizedModalMd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới phòng ban</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="form-group">
+                    <label class="form-label" for="code">Mã phòng ban:</label>
+                    <input id="code" class="form-control" type="text" name="code" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="name">Tên phòng ban:</label>
+                    <input id="name" class="form-control" type="text" name="name" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="management">Trưởng phòng:</label>
+                    <select class="form-control select2" id="management" data-toggle="select2">
+                        <option value="">--Chọn trưởng phòng--</option>
+                        @if (ViewBag.lstUsers != null)
+                        {
+                            foreach (var item in ViewBag.lstUsers)
+                            {
+                                <option value="@item.UserCode">@item.UserName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trạng thái:</label>
+                    <select class="form-control select2" id="status" data-toggle="select2">
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Ngưng hoạt động</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_AddDepartment()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalUpdateDepartment" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa phòng ban</h5>
+                <button onclick="js_closeModalUpdate()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <input hidden id="department_id">
+                <div class="form-group">
+                    <label class="form-label" for="code_u">Mã phòng ban:</label>
+                    <input id="code_u" class="form-control" type="text" name="code_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="name_u">Tên phòng ban:</label>
+                    <input id="name_u" class="form-control" type="text" name="name_u" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="management_u">Trưởng phòng:</label>
+                    <select class="form-control select2" id="management_u" data-toggle="select2">
+                        @if (ViewBag.lstUsers != null)
+                        {
+                            foreach (var item in ViewBag.lstUsers)
+                            {
+                                <option value="@item.UserCode">@item.UserName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Trạng thái:</label>
+                    <select class="form-control select2" id="status_u" data-toggle="select2">
+                        <option value="1">Đang hoạt động</option>
+                        <option value="0">Ngưng hoạt động</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="js_closeModalUpdate()" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="js_UpdateDepartment()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/ProjectUser.js"></script>
+
+

@@ -57,9 +57,11 @@ function js_UpdateProject() {
                     closeButton: true,
                     progressBar: true,
                     newestOnTop: true,
-                    setTimeout: 2000
                 });
-                window.location.href = "/Project/ListProject"
+                //window.location.href = "/Project/ListProject"
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000);
                 
             } else {
                 var message = rp.message;

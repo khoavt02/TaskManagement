@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Dự án cá nhân";
+}
+<h1 class="h3 mb-3">Dự án</h1>
+<nav class="nav nav-pills flex-column flex-sm-row my-2">
+    <a class="flex-sm-fill text-sm-center nav-link col-1" aria-current="page" href="/Project/ListProjectUser"><i class="align-middle mr-2" data-feather="list"></i></a>
+    <a class="flex-sm-fill text-sm-center nav-link active col-1" href="/Project/ProjectKabanUser"><i class="align-middle mr-2" data-feather="grid"></i></a>
+</nav>
+@await Html.PartialAsync("./Partial/_ListProject.cshtml")
+
+<script src="~/js/ProjectKabanUser.js"></script>
+
+

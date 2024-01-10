@@ -11,9 +11,11 @@ public partial class ProjectView
 
     public string? ProjectName { get; set; }
 
-    public DateTime? StartTime { get; set; }
+    public DateTime StartTime { get; set; }
 
-    public DateTime? EndTime { get; set; }
+    public DateTime EndTime { get; set; }
+    public string FormattedStartTime => StartTime.ToString("dd-MM-yyyy");
+    public string FormattedEndTime => EndTime.ToString("dd-MM-yyyy");
     public DateTime? CompleteTime { get; set; }
 
     public string? Manager { get; set; }
@@ -42,6 +44,7 @@ public partial class ProjectView
     public string? UpdatedBy { get; set; }
 
     public string? LinkFiles { get; set; }
+    public string? DepartmentName { get; set; }
     public string CreatedName { get; set; } 
     public string ManagerName { get; set; } 
 }

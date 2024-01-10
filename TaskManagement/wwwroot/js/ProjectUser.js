@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
-    $('#menu-job').addClass("active");
-    $('#menu-job-project').addClass("active");
+    $('#menu-job-user').addClass("active");
+    $('#menu-job-project-user').addClass("active");
     $('.select2').select2();
     $('#datetimepicker-date-1').datetimepicker({
         format: 'L'
@@ -108,7 +108,7 @@ function js_GetList() {
     objTable.bootstrapTable('destroy');
     objTable.bootstrapTable({
         method: 'Get',
-        url: '/Project/GetListProject',
+        url: '/Project/GetListProjectUser',
         queryParams: function (p) {
             var param = $.extend(true, {
                 //keyword: $('#SearchAcademicLevel').val(),

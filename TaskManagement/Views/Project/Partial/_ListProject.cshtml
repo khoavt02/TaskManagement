@@ -30,15 +30,16 @@
 							<div class="badge badge-primary my-2">Mới</div>
 						}else if(item.Status == "PROCESSING")
 						{
-							<div class="badge badge-info my-2">Mới</div>
+							<div class="badge badge-info my-2">Đang thực hiện</div>
 						}
 					</div>
 					<div class="card-body px-4 pt-2">
 						<p>@item.Description</p>
-
-						<img src="img\avatars\avatar-3.jpg" class="rounded-circle mr-1" alt="Avatar" width="28" height="28">
-						<img src="img\avatars\avatar-2.jpg" class="rounded-circle mr-1" alt="Avatar" width="28" height="28">
-						<img src="img\avatars\avatar.jpg" class="rounded-circle mr-1" alt="Avatar" width="28" height="28">
+						<p>Phòng ban: @item.DepartmentName</p>
+						<p>Quản lý: @item.ManagerName</p>
+						<p>Thời gian bắt đầu: @item.FormattedStartTime</p>
+						<p>Thời gian bắt đầu: @item.FormattedEndTime</p>
+						<p>Mức độ: @item.PriorityLevel</p>
 					</div>
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item px-4 pb-4">
