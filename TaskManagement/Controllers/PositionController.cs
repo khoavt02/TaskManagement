@@ -24,8 +24,8 @@ namespace TaskManagement.Controllers
 
         public IActionResult Index()
 		{
-            bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Role", "View");
-            if (!hasPermission) return RedirectToAction("Index", "Home");
+            bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Position", "View");
+            if (!hasPermission) return RedirectToAction("Author", "Home");
             return View();
 		}
 		[HttpPost]
@@ -36,7 +36,13 @@ namespace TaskManagement.Controllers
 				
 				if (model != null)
 				{
-					var position = new Positions()
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Position", "Add");
+                    if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền tạo chức vụ!" });
+                    if (model["code"] == "" || model["name"]=="")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập đầy đủ thông tin!" });
+                    }
+                    var position = new Positions()
 					{
 						Name = model["name"],
 						Code = model["code"],
@@ -66,7 +72,13 @@ namespace TaskManagement.Controllers
 
 				if (model != null)
 				{
-					var position = _context.Positons.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Position", "Edit");
+                    if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền chỉnh sửa chức vụ!" });
+                    if (model["code"] == "" || model["name"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập đầy đủ thông tin!" });
+                    }
+                    var position = _context.Positons.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
                     position.Name = model["name"];
                     position.Code = model["code"];
                     position.UpdatedBy = HttpContext.Session.GetString("user_code");

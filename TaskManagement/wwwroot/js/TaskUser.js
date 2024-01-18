@@ -1,6 +1,6 @@
 ﻿$(function () {
-    $('#menu-job').addClass("active");
-    $('#menu-job-task').addClass("active");
+    $('#menu-job-user').addClass("active");
+    $('#menu-job-task-user').addClass("active");
     $('.select2').select2();
     $('#datetimepicker-date-1').datetimepicker({
         format: 'L'
@@ -163,6 +163,7 @@ function js_GetList() {
     to_date = $('#to-date').val();
     from_date = $('#from-date').val();
     name_s = $('#name_s').val();
+    project_id = $('#project_s').val();
     console.log(review_s, priority_level_s, status_s, to_date, from_date, name_s);
     var objTable = $("#data-table");
     objTable.bootstrapTable('destroy');
@@ -179,7 +180,8 @@ function js_GetList() {
                 to_date: to_date,
                 status: status_s,
                 priority_level: priority_level_s,
-                review: review_s
+                review: review_s,
+                project_id: project_id
             }, p);
             return param;
         },
@@ -204,15 +206,21 @@ function js_GetList() {
                 align: 'left',
                 valign: 'left',
             },
-            //{
-            //    field: "department",
-            //    title: "Phòng ban",
-            //    align: 'left',
-            //    valign: 'left',
-            //},
+            {
+                field: "taskParentName",
+                title: "Công việc cha",
+                align: 'left',
+                valign: 'left',
+            },
+            {
+                field: "projectName",
+                title: "Dự án",
+                align: 'left',
+                valign: 'left',
+            },
             {
                 field: "startTime",
-                title: "Ngày bắt đầu",
+                title: "Bắt đầu",
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
@@ -227,7 +235,7 @@ function js_GetList() {
             },
             {
                 field: "endTime",
-                title: "Ngày kết thúc",
+                title: "Kết thúc",
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
@@ -242,9 +250,14 @@ function js_GetList() {
             },
             {
                 field: "estimateTime",
-                title: "Thời gian(h)",
+                title: "Thời gian",
                 align: 'left',
                 valign: 'left',
+                formatter: function (value, row, index) {
+
+                    return row.estimateTime + ' (h)';
+
+                }
             },
             {
                 field: "processPercent",
@@ -254,11 +267,11 @@ function js_GetList() {
             },
             {
                 field: "completeTime",
-                title: "Ngày hoàn thành",
+                title: "Hoàn thành",
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
-                    if (row.completeTime != '') {
+                    if (row.completeTime != null) {
                         return moment(row.completeTime).format('DD/MM/YYYY');
                     }
                     else {
@@ -295,28 +308,28 @@ function js_GetList() {
                 align: 'left',
                 valign: 'left',
             },
-            {
-                field: "createdDate",
-                title: "Ngày tạo",
-                align: 'left',
-                valign: 'left',
-                formatter: function (value, row, index) {
-                    if (row.createdDate != '') {
-                        return moment(row.createdDate).format('DD/MM/YYYY');
-                    }
-                    else {
-                        return '';
-                    }
-                }
+            //{
+            //    field: "createdDate",
+            //    title: "Ngày tạo",
+            //    align: 'left',
+            //    valign: 'left',
+            //    formatter: function (value, row, index) {
+            //        if (row.createdDate != '') {
+            //            return moment(row.createdDate).format('DD/MM/YYYY');
+            //        }
+            //        else {
+            //            return '';
+            //        }
+            //    }
 
-            },
-            {
-                field: "createdName",
-                title: "Người tạo",
-                align: 'left',
-                valign: 'left',
+            //},
+            //{
+            //    field: "createdName",
+            //    title: "Người tạo",
+            //    align: 'left',
+            //    valign: 'left',
 
-            },
+            //},
             {
                 field: "",
                 title: "Trạng thái",
@@ -330,11 +343,11 @@ function js_GetList() {
 
                     var html = "";
                     console.log( row.startTime, row.endTime, row.completeTime);
-                    if (row.status == "COMPLETE" && row.completeTime <= row.endTime) {
+                    if ((row.status == "COMPLETE" || row.status == "EVALUATE") && row.completeTime <= row.endTime) {
                         html += "<span class= 'badge badge-pill badge-success'>Hoàn thành</span>";
-                    } else if (row.status != "COMPLETE" && ( row.endTime < formattedDate)) {
+                    } else if (row.status != "COMPLETE" && row.status != "EVALUATE" && (row.endTime < formattedDate)) {
                         html += "<span class= 'badge badge-pill badge-danger'>Trễ hạn</span>";
-                    } else if (row.status == "COMPLETE" && row.completeTime >= row.endTime) {
+                    } else if ((row.status == "COMPLETE" || row.status == "EVALUATE") && row.completeTime >= row.endTime) {
                         html += "<span class= 'badge badge-pill badge-secondary'>Hoàn thành trễ</span>";
                     } else {
                         html += "<span class= 'badge badge-pill badge-primary'>Đang thực hiện</span>";
@@ -352,9 +365,7 @@ function js_GetList() {
                 formatter: function (value, row, index) {
                     var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Chi tiết" href="/Task/TaskDetail?id=' + row.id + '"><i class="align-middle fas fa-fw fa-file"></i></a>'
                     //<a href="javascript:void(0)" class=" btn btn-danger btn-sm button btnDelete" title="Xóa"><i class="align-middle fas fa-fw fa-trash-alt"></i></a>'
-                    if (row.status == "COMPLETE" && row.isEvaluated == false) {
-                        action += '<a class=" btn btn-success btn-sm ml-1 btnReview" title="Đánh giá"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
-                    } else if (row.isEvaluated == true) {
+                    if (row.isEvaluated == true) {
                         action += '<a class=" btn btn-success btn-sm ml-1 btnReviewDetail" title="Đánh giá"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
                     }
                     return action;
@@ -450,50 +461,54 @@ function js_GetList() {
     })
 }
 
-function js_AddTaskReview() {
-    var review_description = $('#review_description').val();
-    var complete_level = $('#complete_level').val();
-    var point_review = $('#point_review').val();
-    var task_id_review = $('#task_id_review').val();
-    var project_id_review = $('#project_id_review').val();
-    var formData = new FormData();
-    formData.append("task_id_review", task_id_review);
-    formData.append("point_review", point_review);
-    formData.append("complete_level", complete_level);
-    formData.append("review_description", review_description);
-    formData.append("project_id_review", project_id_review);
+function js_ExportExcel() {
+    priority_level_s = $('#priority_level_s').val();
+    status_s = $('#status_s').val();
+    to_date = $('#to-date').val();
+    from_date = $('#from-date').val();
+    name_s = $('#name_s').val();
+    project_id = $('#project_s').val();
+    review_s = $('#review_s').val();
     $.ajax({
-        type: 'POST',
-        url: "/Task/AddReviewTask",
-        contentType: false,
-        processData: false,
-        cache: false,
-        data: formData,
-        success: function (rp) {
-            if (rp.status == true) {
-                console.log(rp.message)
-                var message = rp.message;
-                var title = "";
-                toastr["success"](message, title, {
-                    positionClass: 'toast-top-right',
-                    closeButton: true,
-                    progressBar: true,
-                    newestOnTop: true,
-                });
-                $("#ModalAddReview").modal("hide");
-                js_GetList();
-            } else {
-                var message = rp.message;
-                var title = "";
-                toastr["error"](message, title, {
-                    positionClass: 'toast-top-right',
-                    closeButton: true,
-                    progressBar: true,
-                    newestOnTop: true,
-                });
+        url: '/Task/ExcelListTaskUser',
+        type: 'GET',
+        data: {
+            name: name_s,
+            from_date: from_date,
+            to_date: to_date,
+            status: status_s,
+            priority_level: priority_level_s,
+            review: review_s,
+            project_id: project_id
+        },
+        xhrFields: {
+            responseType: 'blob' // Set the response type to blob
+        },
+        success: function (response, status, xhr) {
+            // Check if the content type is correct
+            if (response.status == false) {
+                Toast("Thông báo", response.message, "error")
             }
+            var contentType = xhr.getResponseHeader('Content-Type');
+            if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                // Trigger the file download
+                var blob = new Blob([response], { type: contentType });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'Danh_sách_công_việc.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error('Invalid content type: ' + contentType);
+            }
+        },
+        error: function (xhr, status, error) {
+            // Handle AJAX error
+            console.error(xhr.responseText);
+            Toast("Thông báo", "Bạn không có quyền xuất excel công việc!", "error")
         }
-    })
+    });
 }
 
 

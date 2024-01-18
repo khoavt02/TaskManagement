@@ -1,6 +1,6 @@
 ﻿$(function () {
-    $('#menu-job').addClass("active");
-    $('#menu-job-task').addClass("active");
+    $('#menu-job-user').addClass("active");
+    $('#menu-job-task-user').addClass("active");
     $('.select2').select2();
     $('#datetimepicker-date-1').datetimepicker({
         format: 'L'

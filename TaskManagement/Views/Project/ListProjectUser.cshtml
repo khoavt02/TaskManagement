@@ -41,9 +41,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-xl-3">
-                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
-                    </div>
+                    
                 </div>
                 <div class="row">
                     <div class="col-6 col-xl-3">
@@ -70,6 +68,10 @@
                         </div>
                     </div>
                     <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 26px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                        <a id="exportButton" onclick="js_ExportExcel()" class="btn btn-success mt-n1 text-white" style="margin-top: 26px !important;"><i class="fas fa-document"></i> Xuất Excel</a>
+                    </div>
+                   @*  <div class="col-6 col-xl-3">
                         <div class="form-group">
                             <label class="form-label">Phòng ban</label>
                             <select class="form-control select2" id="deparment_f" data-toggle="select2">
@@ -83,7 +85,7 @@
                                 }
                             </select>
                         </div>
-                    </div>
+                    </div> *@
                 </div>
                 <table id="table-projects" class="table table-striped" style="width:100%">
                 </table>

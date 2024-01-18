@@ -37,7 +37,13 @@ namespace TaskManagement.Controllers
 				
 				if (model != null)
 				{
-					var role = new RoleGroup()
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Role", "Add");
+                    if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền tạo nhóm quyền!" });
+                    if (model["status"] == "" || model["name"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập đầy đủ thông tin!" });
+                    }
+                    var role = new RoleGroup()
 					{
 						Name = model["name"],
 						Status = model["status"] == "1" ? true : false,
@@ -67,7 +73,13 @@ namespace TaskManagement.Controllers
 
 				if (model != null)
 				{
-					var roleGroup = _context.RoleGroups.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Role", "Edit");
+                    if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền chỉnh sửa nhóm quyền!" });
+                    if (model["status"] == "" || model["name"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập đầy đủ thông tin!" });
+                    }
+                    var roleGroup = _context.RoleGroups.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
                     roleGroup.Name = model["name"];
                     roleGroup.Status = model["status"] == "1" ? true : false;
                     roleGroup.UpdatedBy = HttpContext.Session.GetString("user_code");
@@ -151,7 +163,7 @@ namespace TaskManagement.Controllers
         #region RoleDetail
 		public IActionResult RoleGroupDetail(int id)
 		{
-			var roleGroup = _context.RoleGroups.FirstOrDefault(x => x.Id == id);
+            var roleGroup = _context.RoleGroups.FirstOrDefault(x => x.Id == id);
 			ViewData["roleName"] = roleGroup.Name;
 			var lstRoles = _context.Roles.Where(x => x.RoleGroupId ==  id).ToList();	
 			var lstModules = _context.Modules.ToList();
@@ -187,6 +199,8 @@ namespace TaskManagement.Controllers
 		{
 			try {
                 //var modules = JsonConvert.DeserializeObject<List<ModuleView>>(Modules);
+                bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Role", "Edit");
+                if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền chỉnh sửa phân quyền!" });
                 List<ModuleView> modules = JsonConvert.DeserializeObject<List<ModuleView>>(model["modules"]); 
                 int roleGroupId = int.Parse(model["roleGroupId"]);
                 if (roleGroupId > 0)

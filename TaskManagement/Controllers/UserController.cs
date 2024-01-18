@@ -11,13 +11,17 @@ namespace TaskManagement.Controllers
 		private readonly TaskManagementContext _context;
 		private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public UserController(TaskManagementContext context)
+		public UserController(TaskManagementContext context, IHttpContextAccessor contextAccessor)
 		{
 			this._context = context;
-		}
-		public IActionResult Index()
+            this._contextAccessor = contextAccessor;
+
+        }
+        public IActionResult Index()
 		{
-			ViewBag.lstPositions = _context.Positons.ToList();
+            bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "User", "View");
+            if (!hasPermission) return RedirectToAction("Author", "Home");
+            ViewBag.lstPositions = _context.Positons.ToList();
 			ViewBag.lstDepartments = _context.Departments.ToList();
 			ViewBag.lstRoles = _context.RoleGroups.ToList();
 			return View();
@@ -27,17 +31,39 @@ namespace TaskManagement.Controllers
 		{
 			try
 			{
-				
+
 				if (model != null)
 				{
-					string password = new RSAHelpers().Sha256Hash(model["password"]);
+					bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "User", "View");
+					if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền tạo mới nhân viên!" });
+					if (model["code"] == "" || model["name"] == "")
+					{
+						return new JsonResult(new { status = false, message = "Vui lòng nhập mã nhân viên và tên nhân viên!" });
+					}
+					if (model["account"] == "" || model["password"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập tài khoản và mật khẩu cho nhân viên!" });
+                    }
+                    if (model["department"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng chọn phòng ban cho nhân viên!" });
+                    }
+                    if (model["postion"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng chọn chức vụ cho nhân viên!" });
+                    }
+                    if (model["status"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng chọn trạng thái cho nhân viên!" });
+                    }
+                    string password = new RSAHelpers().Sha256Hash(model["password"]);
 					var user = new User()
 					{
 						UserCode = model["code"],
                         UserName = model["name"],
 						Account = model["account"],
 						Password = password,
-						DepartmentCode = model["deparment"],
+						DepartmentCode = model["department"],
 						DepartmentName = model["department_name"],
 						Role = int.Parse(model["role"]),
 						Status = model["status"] == "1" ? true : false,
@@ -69,10 +95,32 @@ namespace TaskManagement.Controllers
 
 				if (model != null)
 				{
-					var user = _context.Users.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "User", "Edit");
+                    if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền chỉnh sửa nhân viên!" });
+                    if (model["code"] == "" || model["name"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập mã nhân viên và tên nhân viên!" });
+                    }
+                    if (model["account"] == "" || model["password"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập tài khoản và mật khẩu cho nhân viên!" });
+                    }
+                    if (model["department"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng chọn phòng ban cho nhân viên!" });
+                    }
+                    if (model["postion"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng chọn chức vụ cho nhân viên!" });
+                    }
+                    if (model["status"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng chọn trạng thái cho nhân viên!" });
+                    }
+                    var user = _context.Users.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
 					user.UserName = model["name"];
 					user.Account = model["account"];
-					user.DepartmentCode = model["deparment"];
+					user.DepartmentCode = model["department"];
 					user.DepartmentName = model["department_name"];
 					user.Role = int.Parse(model["role"]);
 					user.Status = int.Parse(model["status"]) == 1 ? true : false;

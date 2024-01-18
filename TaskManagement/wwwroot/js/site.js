@@ -16,3 +16,13 @@ function DisplayPersonalNotification(message, title) {
     }, 1300);
 }
 
+function Toast(title, message, status) {
+    toastr[status](message, title, {
+        positionClass: 'toast-top-right',
+        closeButton: true,
+        progressBar: true,
+        newestOnTop: true,
+        setTimeout: 3000
+    });
+}
+

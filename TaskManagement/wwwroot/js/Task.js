@@ -8,8 +8,58 @@
     $('#datetimepicker-date-2').datetimepicker({
         format: 'L'
     });
+    
     js_GetList();
 });
+function js_ExportExcel() {
+    priority_level_s = $('#priority_level_s').val();
+    status_s = $('#status_s').val();
+    to_date = $('#to-date').val();
+    from_date = $('#from-date').val();
+    name_s = $('#name_s').val();
+    project_id = $('#project_s').val();
+    department = $('#department_s').val();
+    $.ajax({
+        url: '/Task/ExcelListTask',
+        type: 'GET',
+        data: {
+            name: name_s,
+            from_date: from_date,
+            to_date: to_date,
+            status: status_s,
+            priority_level: priority_level_s,
+            project_id: project_id,
+            department: department
+        },
+        xhrFields: {
+            responseType: 'blob' // Set the response type to blob
+        },
+        success: function (response, status, xhr) {
+            // Check if the content type is correct
+            if (response.status == false) {
+                Toast("Thông báo", response.message, "error")
+            }
+            var contentType = xhr.getResponseHeader('Content-Type');
+            if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                // Trigger the file download
+                var blob = new Blob([response], { type: contentType });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'Danh_sách_công_việc.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error('Invalid content type: ' + contentType);
+            }
+        },
+        error: function (xhr, status, error) {
+            // Handle AJAX error
+            console.error(xhr.responseText);
+            Toast("Thông báo", "Bạn không có quyền xuất excel công việc!", "error")
+        }
+    });
+}
 function closeAllModals() {
     $('.modal').modal('hide');
 }
@@ -25,40 +75,43 @@ function js_AddTask() {
     var estimate_time = $('#estimate_time').val();
     var task_name = $('#task_name').val();
     var project_id = $('#project').val();
-   
-    //var formData = new FormData();
-    //formData.append("point", point);
-    //formData.append("priority_level", priority_level);
-    //formData.append("department", department);
-    //formData.append("manager", manager);
-    //formData.append("assigned_user", users);
-    //formData.append("end_date", end_date);
-    //formData.append("start_date", start_date);
-    //formData.append("task_description", task_description);
-    //formData.append("estimate_time", estimate_time);
-    //formData.append("task_name", task_name);
-    //formData.append("project_id", project_id);
+    var fileInput = document.getElementById('file_attachment');
+    var file = fileInput.files[0];
+    var formData = new FormData();
+    formData.append("point", point);
+    formData.append("priority_level", priority_level);
+    formData.append("department", department);
+    formData.append("manager", manager);
+    formData.append("assigned_user", users);
+    formData.append("end_date", end_date);
+    formData.append("start_date", start_date);
+    formData.append("task_description", task_description);
+    formData.append("estimate_time", estimate_time);
+    formData.append("task_name", task_name);
+    formData.append("project_id", project_id);
+    formData.append("file", file);
     $.ajax({
         type: 'POST',
-        url: "/Task/AddTaskV2",
+        url: "/Task/AddTask",
         dataType: "json",
-        //contentType: false,
-        //processData: false,
-        //cache: false,
+        contentType: false,
+        processData: false,
+        cache: false,
+        data: formData,
         //contentType: 'application/json', // Thêm kiểu dữ liệu
-        data: {
-            point: point,
-            priority_level: priority_level,
-            department: department,
-            manager: manager,
-            users: users,
-            end_date: end_date,
-            start_date: start_date,
-            task_description: task_description,
-            estimate_time: estimate_time,
-            task_name: task_name,
-            project_id: project_id
-        }, // Chuyển đối tượng thành JSON
+        //data: {
+        //    point: point,
+        //    priority_level: priority_level,
+        //    department: department,
+        //    manager: manager,
+        //    users: users,
+        //    end_date: end_date,
+        //    start_date: start_date,
+        //    task_description: task_description,
+        //    estimate_time: estimate_time,
+        //    task_name: task_name,
+        //    project_id: project_id
+        //}, // Chuyển đối tượng thành JSON
         success: function (rp) {
             if (rp.status == true) {
                 console.log(rp.message)
@@ -107,7 +160,8 @@ function js_AddTaskChild() {
     var project_id = $('#project_id').val();
     var task_parent_id = $('#task_parent_id').val();
     var task_parent_code = $('#task_parent_code').val();
-
+    var fileInput = document.getElementById('file_attachment');
+    var file = fileInput.files[0];
     var formData = new FormData();
     formData.append("point", point);
     formData.append("priority_level", priority_level);
@@ -121,6 +175,7 @@ function js_AddTaskChild() {
     formData.append("task_parent_id", task_parent_id);
     formData.append("task_parent_code", task_parent_code);
     formData.append("project_id", project_id);
+    formData.append("file", file);
     $.ajax({
         type: 'POST',
         url: "/Task/AddTaskChild",
@@ -157,13 +212,14 @@ function js_AddTaskChild() {
     })
 }
 function js_GetList() {
-    review_s = $('#review_s').val();
+    //review_s = $('#review_s').val();
     priority_level_s = $('#priority_level_s').val();
     status_s = $('#status_s').val();
     to_date = $('#to-date').val();
     from_date = $('#from-date').val();
     name_s = $('#name_s').val();
-    console.log(review_s, priority_level_s, status_s, to_date, from_date, name_s);
+    project_id = $('#project_s').val();
+    department = $('#department_s').val();
     var objTable = $("#data-table");
     objTable.bootstrapTable('destroy');
     objTable.bootstrapTable({
@@ -179,7 +235,9 @@ function js_GetList() {
                 to_date: to_date,
                 status: status_s,
                 priority_level: priority_level_s,
-                review: review_s
+                //review: review_s,
+                project_id: project_id,
+                department: department
             }, p);
             return param;
         },
@@ -204,6 +262,17 @@ function js_GetList() {
                 align: 'left',
                 valign: 'left',
             },
+            {
+                field: "projectName",
+                title: "Thuộc dự án",
+                align: 'left',
+                valign: 'left',
+            }, {
+                field: "departmentName",
+                title: "Phòng ban",
+                align: 'left',
+                valign: 'left',
+            },
             //{
             //    field: "department",
             //    title: "Phòng ban",
@@ -212,7 +281,7 @@ function js_GetList() {
             //},
             {
                 field: "startTime",
-                title: "Ngày bắt đầu",
+                title: "Bắt đầu",
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
@@ -227,7 +296,7 @@ function js_GetList() {
             },
             {
                 field: "endTime",
-                title: "Ngày kết thúc",
+                title: "Kết thúc",
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
@@ -242,9 +311,14 @@ function js_GetList() {
             },
             {
                 field: "estimateTime",
-                title: "Thời gian(h)",
+                title: "Thời gian",
                 align: 'left',
                 valign: 'left',
+                formatter: function (value, row, index) {
+                    
+                    return row.estimateTime + ' (h)';
+                   
+                }
             },
             {
                 field: "processPercent",
@@ -254,11 +328,11 @@ function js_GetList() {
             },
             {
                 field: "completeTime",
-                title: "Ngày hoàn thành",
+                title: "Hoàn thành",
                 align: 'left',
                 valign: 'left',
                 formatter: function (value, row, index) {
-                    if (row.completeTime != '') {
+                    if (row.completeTime != null) {
                         return moment(row.completeTime).format('DD/MM/YYYY');
                     }
                     else {
@@ -295,28 +369,28 @@ function js_GetList() {
                 align: 'left',
                 valign: 'left',
             },
-            {
-                field: "createdDate",
-                title: "Ngày tạo",
-                align: 'left',
-                valign: 'left',
-                formatter: function (value, row, index) {
-                    if (row.createdDate != '') {
-                        return moment(row.createdDate).format('DD/MM/YYYY');
-                    }
-                    else {
-                        return '';
-                    }
-                }
+            //{
+            //    field: "createdDate",
+            //    title: "Ngày tạo",
+            //    align: 'left',
+            //    valign: 'left',
+            //    formatter: function (value, row, index) {
+            //        if (row.createdDate != '') {
+            //            return moment(row.createdDate).format('DD/MM/YYYY');
+            //        }
+            //        else {
+            //            return '';
+            //        }
+            //    }
 
-            },
-            {
-                field: "createdName",
-                title: "Người tạo",
-                align: 'left',
-                valign: 'left',
+            //},
+            //{
+            //    field: "createdName",
+            //    title: "Người tạo",
+            //    align: 'left',
+            //    valign: 'left',
 
-            },
+            //},
             {
                 field: "",
                 title: "Trạng thái",
@@ -330,11 +404,11 @@ function js_GetList() {
 
                     var html = "";
                     console.log( row.startTime, row.endTime, row.completeTime);
-                    if (row.status == "COMPLETE" && row.completeTime <= row.endTime) {
+                    if ((row.status == "COMPLETE" || row.status == "EVALUATE") && row.completeTime <= row.endTime) {
                         html += "<span class= 'badge badge-pill badge-success'>Hoàn thành</span>";
-                    } else if (row.status != "COMPLETE" && ( row.endTime < formattedDate)) {
+                    } else if (row.status != "COMPLETE" && row.status != "EVALUATE" && ( row.endTime < formattedDate)) {
                         html += "<span class= 'badge badge-pill badge-danger'>Trễ hạn</span>";
-                    } else if (row.status == "COMPLETE" && row.completeTime >= row.endTime) {
+                    } else if ((row.status == "COMPLETE" || row.status == "EVALUATE") && row.completeTime >= row.endTime) {
                         html += "<span class= 'badge badge-pill badge-secondary'>Hoàn thành trễ</span>";
                     } else {
                         html += "<span class= 'badge badge-pill badge-primary'>Đang thực hiện</span>";
@@ -494,6 +568,24 @@ function js_AddTaskReview() {
             }
         }
     })
+}
+
+function js_getDepartment() {
+    var selectedProjectId = $('#project').val();
+    if (selectedProjectId) {
+        $.ajax({
+            url: '/Task/GetDepartmentByProjectId',
+            type: 'GET',
+            data: { id: selectedProjectId },
+            success: function (data) {
+                $('#department').val(data.departmentCode);
+                $('#department').trigger('change');
+            },
+            error: function () {
+                console.log('Lỗi khi gửi yêu cầu AJAX');
+            }
+        });
+    } 
 }
 
 

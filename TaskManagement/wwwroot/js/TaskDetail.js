@@ -117,51 +117,51 @@ function js_GetList() {
                 valign: 'left',
 
             },
-            {
-                title: "Thao tác",
-                valign: 'middle',
-                align: 'center',
-                width: '100px',
-                class: 'CssAction',
-                formatter: function (value, row, index) {
-                    var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Sửa"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
-                            //<a href="javascript:void(0)" class=" btn btn-danger btn-sm button btnDelete" title="Xóa"><i class="align-middle fas fa-fw fa-trash-alt"></i></a>'
-                    return action;
-                },
-                events: {
+            //{
+            //    title: "Thao tác",
+            //    valign: 'middle',
+            //    align: 'center',
+            //    width: '100px',
+            //    class: 'CssAction',
+            //    formatter: function (value, row, index) {
+            //        var action = '<a class=" btn btn-primary btn-sm btnEdit" title="Sửa"><i class="align-middle fas fa-fw fa-pencil-alt"></i></a>'
+            //                //<a href="javascript:void(0)" class=" btn btn-danger btn-sm button btnDelete" title="Xóa"><i class="align-middle fas fa-fw fa-trash-alt"></i></a>'
+            //        return action;
+            //    },
+            //    events: {
 
-                    //'click .btnDelete': function (e, value, row, index) {
-                    //    selectedId = row.Id;
-                    //    $('#NameAcademicLevelsdelete').text(row.Name);
-                    //    $('#confirmDeleteModals').modal('show');
-                    //},
-                    'click .btnEdit': function (e, value, row, index) {
-                        console.log(row);
-                        $.ajax({
-                            type: 'Get',
-                            url: '/Department/GetDetailDepartmentById',
-                            data: {
-                                id: row.id
-                            },
-                            success: function (rp) {
-                                if (rp.status) {
-                                    console.log(row.status, typeof (row.status), row)
-                                    $("#ModalUpdateDepartment").modal("show");
-                                    $('#name_u').val(row.departmentName);
-                                    $('#code_u').val(row.departmentCode);
-                                    $('#management_u').val(row.mannager);
-                                    var status = row.status == true ? 1 : 0;
-                                    $('#status_u').val(status);
-                                    $('#department_id').val(row.id);
-                                }
-                                else {
-                                    toastr.error(rp.message);
-                                }
-                            }
-                        })
-                    },
-                }
-            },
+            //        //'click .btnDelete': function (e, value, row, index) {
+            //        //    selectedId = row.Id;
+            //        //    $('#NameAcademicLevelsdelete').text(row.Name);
+            //        //    $('#confirmDeleteModals').modal('show');
+            //        //},
+            //        'click .btnEdit': function (e, value, row, index) {
+            //            console.log(row);
+            //            $.ajax({
+            //                type: 'Get',
+            //                url: '/Department/GetDetailDepartmentById',
+            //                data: {
+            //                    id: row.id
+            //                },
+            //                success: function (rp) {
+            //                    if (rp.status) {
+            //                        console.log(row.status, typeof (row.status), row)
+            //                        $("#ModalUpdateDepartment").modal("show");
+            //                        $('#name_u').val(row.departmentName);
+            //                        $('#code_u').val(row.departmentCode);
+            //                        $('#management_u').val(row.mannager);
+            //                        var status = row.status == true ? 1 : 0;
+            //                        $('#status_u').val(status);
+            //                        $('#department_id').val(row.id);
+            //                    }
+            //                    else {
+            //                        toastr.error(rp.message);
+            //                    }
+            //                }
+            //            })
+            //        },
+            //    }
+            //},
 
         ],
         formatNoMatches: function () {
@@ -255,4 +255,76 @@ function uploadFile() {
                 console.error('Error:', error);
             });
     } 
+}
+
+function js_UpdateTask() {
+    var task_id = $('#task_id').val();
+    var point = $('#point').val();
+    var priority_level = $('#priority_level').val();
+    var department = $('#department').val();
+    var manager = $('#manager').val();
+    var users = $('#users').val();
+    var end_date = $('#end_date').val();
+    var start_date = $('#start_date').val();
+    var task_description = $('#task_description').val();
+    var estimate_time = $('#estimate_time').val();
+    var task_name = $('#task_name').val();
+    var project_id = $('#project_id').val();
+    var proccess = $('#proccess').val();
+    var status = $('#status').val();
+    var fileInput = document.getElementById('file_attachment');
+    var file = fileInput.files[0];
+    var formData = new FormData();
+    formData.append("task_id", task_id);
+    formData.append("point", point);
+    formData.append("priority_level", priority_level);
+    formData.append("department", department);
+    formData.append("manager", manager);
+    formData.append("assigned_user", users);
+    formData.append("end_date", end_date);
+    formData.append("start_date", start_date);
+    formData.append("task_description", task_description);
+    formData.append("estimate_time", estimate_time);
+    formData.append("task_name", task_name);
+    formData.append("project_id", project_id);
+    formData.append("file", file);
+    formData.append("proccess", proccess);
+    formData.append("status", status);
+    $.ajax({
+        type: 'POST',
+        url: "/Task/UpdateTask",
+        dataType: "json",
+        contentType: false,
+        processData: false,
+        cache: false,
+        data: formData,
+        success: function (rp) {
+            if (rp.status == true) {
+                console.log(rp.message)
+                var message = rp.message;
+                var title = "";
+                toastr["success"](message, title, {
+                    positionClass: 'toast-top-right',
+                    closeButton: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                });
+            } else {
+                var message = rp.message;
+                var title = "";
+                toastr["error"](message, title, {
+                    positionClass: 'toast-top-right',
+                    closeButton: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                });
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('AJAX Error:', textStatus, errorThrown);
+        },
+        complete: function () {
+            console.log('AJAX Complete');
+        }
+    })
 }

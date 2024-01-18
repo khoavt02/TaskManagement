@@ -20,9 +20,9 @@ function OnConnected() {
 }
 
 
-connection.on("ReceivedPersonalNotification", function (message, username) {
+connection.on("ReceivedPersonalNotification", function (title, message) {
     console.log(message);
-    DisplayPersonalNotification(message, 'Hey ' + username);
+    DisplayPersonalNotification(title, message);
 });
 function formatDateTime(dateTimeString) {
     const options = {

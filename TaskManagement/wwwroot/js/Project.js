@@ -31,8 +31,18 @@ function js_AddProject() {
     var project_name = $('#project_name').val();
     var fileInput = document.getElementById('file_attachment');
     var file = fileInput.files[0];
-    console.log(start_date, end_date)
-   
+    //if (project_code == "" || project_name == "") {
+    //    Toast("Thông báo", "Vui lòng nhập đầy đủ mã dự án và tên dự án", "error");
+    //    return;
+    //}
+    //if (project_description == "" && fileInput == null) {
+    //    Toast("Thông báo", "Vui lòng nhập mô tả hoặc thêm file đính kèm", "error");
+    //    return;
+    //}
+    //if (start_date == "" || end_date == "") {
+    //    Toast("Thông báo", "Vui lòng nhập mô tả hoặc thêm file đính kèm", "error");
+    //    return;
+    //}
     var formData = new FormData();
     formData.append("point", point);
     formData.append("priority_level", priority_level);
@@ -382,5 +392,53 @@ function js_UpdateProject() {
             }
         }
     })
+}
+
+function js_ExportExcel() {
+    priority_level_s = $('#priority_level_f').val();
+    status_s = $('#status_f').val();
+    to_date = $('#to-date').val();
+    from_date = $('#from-date').val();
+    name_s = $('#name_f').val();
+    department_s = $('#deparment_f').val();
+    $.ajax({
+        url: '/Project/ExcelListProject',
+        type: 'GET',
+        data: {
+            name: name_s,
+            from_date: from_date,
+            to_date: to_date,
+            status: status_s,
+            priority_level: priority_level_s,
+            department_s: department_s,
+        },
+        xhrFields: {
+            responseType: 'blob' // Set the response type to blob
+        },
+        success: function (response, status, xhr) {
+            // Check if the content type is correct
+            if (response.status == false) {
+                Toast("Thông báo", response.message, "error")
+            }
+            var contentType = xhr.getResponseHeader('Content-Type');
+            if (contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                // Trigger the file download
+                var blob = new Blob([response], { type: contentType });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'Danh_sách_dự_án.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error('Invalid content type: ' + contentType);
+            }
+        },
+        error: function (xhr, status, error) {
+            // Handle AJAX error
+            console.error(xhr.responseText);
+            Toast("Thông báo", "Bạn không có quyền xuất excel công việc!", "error")
+        }
+    });
 }
 

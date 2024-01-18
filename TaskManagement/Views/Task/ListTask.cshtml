@@ -28,6 +28,21 @@
                     </div>
                     <div class="col-6 col-xl-3">
                         <div class="form-group">
+                            <label class="form-label">Thuộc dự án</label>
+                            <select class="form-control select2" id="project_s" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                @if (ViewBag.lstProjects != null)
+                                {
+                                    foreach (var item in ViewBag.lstProjects)
+                                    {
+                                        <option value="@item.Id">@item.ProjectName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
                             <label class="form-label">Từ ngày</label>
                             <div class="input-group date" id="datetimepicker-date-1" data-target-input="nearest">
                                 <input type="text" id="from-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-1">
@@ -48,9 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-xl-3">
-                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
-                    </div>
+                    
                 </div>
                 <div class="row">
                     <div class="col-6 col-xl-3">
@@ -76,15 +89,34 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-6 col-xl-3">
+                    @* <div class="col-6 col-xl-3">
                         <div class="form-group">
-                            <label class="form-label">Trạng thái</label>
+                            <label class="form-label">Trạng thái đánh giá</label>
                             <select class="form-control select2" id="review_s" data-toggle="select2">
                                 <option value="0">Tất cả</option>
                                 <option value="1">Đã đánh giá</option>
                                 <option value="2">Chưa đánh giá</option>
                             </select>
                         </div>
+                    </div> *@
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Thuộc phòng ban</label>
+                            <select class="form-control select2" id="department_s" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                @if (ViewBag.lstDepartments != null)
+                                {
+                                    foreach (var item in ViewBag.lstDepartments)
+                                    {
+                                        <option value="@item.DepartmentCode">@item.DepartmentName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 26px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                        <a id="exportButton" onclick="js_ExportExcel()" class="btn btn-success mt-n1 text-white" style="margin-top: 26px !important;"><i class="fas fa-document"></i> Xuất Excel</a>
                     </div>
                 </div>
                 <table id="data-table" class="table table-striped" style="width:100%">

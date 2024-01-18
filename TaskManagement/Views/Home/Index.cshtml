@@ -11,45 +11,45 @@
 						<div class="col-sm-6">
 							<div class="card flex-fill">
 								<div class="card-header">
-									<span class="badge badge-primary float-right">Today</span>
-									<h5 class="card-title mb-0">Visitors</h5>
+									<span class="badge badge-primary float-right">New</span>
+									<h5 class="card-title mb-0">Công việc mới</h5>
 								</div>
 								<div class="card-body my-2">
 									<div class="row d-flex align-items-center mb-4">
 										<div class="col-8">
-											<h2 class="d-flex align-items-center mb-0 font-weight-light">
-												17.212
+											<h2 id="total-task-new" class="d-flex align-items-center mb-0 font-weight-light">
+												0
 											</h2>
 										</div>
 										<div class="col-4 text-right">
-											<span class="text-muted">57%</span>
+											<span id="percent-task-new" class="text-muted">0%</span>
 										</div>
 									</div>
 
 									<div class="progress progress-sm shadow-sm mb-1">
-										<div class="progress-bar bg-primary" role="progressbar" style="width: 57%"></div>
+										<div id="progress-task-new" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
 									</div>
 								</div>
 							</div>
 							<div class="card flex-fill">
 								<div class="card-header">
-									<span class="badge badge-info float-right">Monthly</span>
-									<h5 class="card-title mb-0">Real-Time</h5>
+									<span class="badge badge-info float-right">Processing</span>
+									<h5 class="card-title mb-0">Đang thực hiện</h5>
 								</div>
 								<div class="card-body my-2">
 									<div class="row d-flex align-items-center mb-4">
 										<div class="col-8">
-											<h2 class="d-flex align-items-center mb-0 font-weight-light">
-												1.856
+											<h2 id="total-task-processing" class="d-flex align-items-center mb-0 font-weight-light">
+												0
 											</h2>
 										</div>
-										<div class="col-4 text-right">
-											<span class="text-muted">64%</span>
+										<div class="col-4 text-progress">
+											<span id="percent-task-processing" class="text-muted">0%</span>
 										</div>
 									</div>
 
 									<div class="progress progress-sm shadow-sm mb-1">
-										<div class="progress-bar bg-info" role="progressbar" style="width: 64%"></div>
+										<div id="progress-task-processing" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
 									</div>
 								</div>
 							</div>
@@ -57,45 +57,45 @@
 						<div class="col-sm-6">
 							<div class="card flex-fill">
 								<div class="card-header">
-									<span class="badge badge-warning float-right">Annual</span>
-									<h5 class="card-title mb-0">Bounce</h5>
+									<span class="badge badge-success float-right">Complete</span>
+									<h5 class="card-title mb-0">Đã hoàn thành</h5>
 								</div>
 								<div class="card-body my-2">
 									<div class="row d-flex align-items-center mb-4">
 										<div class="col-8">
-											<h2 class="d-flex align-items-center mb-0 font-weight-light">
-												2.364
+											<h2 id="total-task-complete" class="d-flex align-items-center mb-0 font-weight-light">
+												0
 											</h2>
 										</div>
 										<div class="col-4 text-right">
-											<span class="text-muted">82%</span>
+											<span id="percent-task-complete" class="text-muted">0%</span>
 										</div>
 									</div>
 
 									<div class="progress progress-sm shadow-sm mb-1">
-										<div class="progress-bar bg-warning" role="progressbar" style="width: 82%"></div>
+										<div id="progress-task-complete" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
 									</div>
 								</div>
 							</div>
 							<div class="card flex-fill">
 								<div class="card-header">
-									<span class="badge badge-success float-right">Yearly</span>
-									<h5 class="card-title mb-0">Activity</h5>
+									<span class="badge badge-warning float-right">Evaluated</span>
+									<h5 class="card-title mb-0">Đã đánh giá</h5>
 								</div>
 								<div class="card-body my-2">
 									<div class="row d-flex align-items-center mb-4">
 										<div class="col-8">
-											<h2 class="d-flex align-items-center mb-0 font-weight-light">
-												57.300
+											<h2 id="total-task-evaluated" class="d-flex align-items-center mb-0 font-weight-light">
+												0
 											</h2>
 										</div>
 										<div class="col-4 text-right">
-											<span class="text-muted">32%</span>
+											<span id="percent-task-evaluated" class="text-muted">0%</span>
 										</div>
 									</div>
 
 									<div class="progress progress-sm shadow-sm mb-1">
-										<div class="progress-bar bg-success" role="progressbar" style="width: 32%"></div>
+										<div id="progress-task-evaluated" class="progress-bar bg-warning" role="progressbar" style="width: 32%"></div>
 									</div>
 								</div>
 							</div>
@@ -107,7 +107,7 @@
 			<div class="col-lg-6 col-xl-7">
 				<div class="card flex-fill w-100">
 					<div class="card-header">
-						<h5 class="card-title mb-0">Thống kê</h5>
+						<h5 class="card-title mb-0">Thống kê số lượng công  việc theo phòng ban</h5>
 					</div>
 					<div class="card-body d-flex w-100">
 						<div class="align-self-center chart">

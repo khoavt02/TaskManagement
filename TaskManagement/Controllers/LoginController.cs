@@ -42,7 +42,8 @@ namespace TaskManagement.Controllers
 					Response.Cookies.Append("user_code", user.UserCode);
                     HttpContext.Session.SetString("Username", user.Account);
                     HttpContext.Session.SetString("user_code", user.UserCode);
-					List<Role> lstRole = _context.Roles.Where(x => x.RoleGroupId == user.Role).ToList();
+                    HttpContext.Session.SetString("department_code", user.DepartmentCode);
+                    List<Role> lstRole = _context.Roles.Where(x => x.RoleGroupId == user.Role).ToList();
 					HttpContext.Session.SetString("roles", JsonConvert.SerializeObject(lstRole));
                     //string userData = JsonConvert.SerializeObject(user);
                     //SessionHelpers.Set(_contextAccessor, userData, 10 * 365);

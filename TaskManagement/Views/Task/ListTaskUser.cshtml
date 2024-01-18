@@ -49,7 +49,19 @@
                         </div>
                     </div>
                     <div class="col-6 col-xl-3">
-                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                        <div class="form-group">
+                            <label class="form-label">Thuộc dự án</label>
+                            <select class="form-control select2" id="project_s" data-toggle="select2">
+                                <option value="">Tất cả</option>
+                                @if (ViewBag.lstProjects != null)
+                                {
+                                    foreach (var item in ViewBag.lstProjects)
+                                    {
+                                        <option value="@item.Id">@item.ProjectName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -86,6 +98,10 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 26px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                        <a id="exportButton" onclick="js_ExportExcel()" class="btn btn-success mt-n1 text-white" style="margin-top: 26px !important;"><i class="fas fa-document"></i> Xuất Excel</a>
+                    </div>
                 </div>
                 <table id="data-table" class="table table-striped" style="width:100%">
                 </table>
@@ -93,7 +109,49 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="ModalDetailReview" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đánh giá công việc</h5>
+                <button onclick="closeAllModals()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="form-group">
+                    <label class="form-label" for="point_review_d">Điểm số:</label>
+                    <input id="point_review_d" class="form-control" type="text" name="point_review_d" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="complete_level_d">Mức độ hoàn thành:</label>
+                    <select class="form-control select2" id="complete_level_d" data-toggle="select2">
+                        <option value="">--Chọn mức độ hoàn thành--</option>
+                        <option value="EXCELLENT">Xuất sắc</option>
+                        <option value="GOOD">Tốt</option>
+                        <option value="NORMAL">Bình thường</option>
+                        <option value="Bad">Chưa tốt</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="review_description_d">Nhận xét:</label>
+                    <textarea rows="3" class="form-control" id="review_description_d" name="review_description_d" placeholder="Nhập mô tả chi tiết"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="user_review_d">Người đánh giá:</label>
+                    <input id="user_review_d" class="form-control" type="text" name="user_review_d" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="date_review_d">Ngày đánh giá:</label>
+                    <input id="date_review_d" class="form-control" type="text" name="date_review_d" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closeAllModals()" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="~/js/TaskUser.js"></script>
 
 

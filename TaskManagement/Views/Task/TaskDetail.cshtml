@@ -2,6 +2,7 @@
     @model TaskManagement.Models.Task
     ViewData["Title"] = "Quản lý công việc";
 }
+<a href="/Task/TaskChildCreate?id_parent=@Model.Id" class="btn btn-primary float-right mt-n1"><i class="fas fa-plus"></i> Tạo công việc con</a>
 <h1 class="h3 mb-3">Công việc</h1>
 
 <div class="row">
@@ -11,7 +12,6 @@
                 <h5 class="card-title mb-0 fw-bolder">Chi tiết công việc</h5>
             </div>
             <div class="card-body">
-                <form id="validation-form">
                     <input type="hidden" id="task_id" value="@Model.Id"/>
                     <input type="hidden" id="project_id" value="@Model.ProjectId"/>
                     <div class="row">
@@ -33,6 +33,14 @@
                         <label class="form-label">Mô tả</label>
                         <textarea rows="4" class="form-control" id="task_description" name="task_description" value="@Model.Description">@Model.Description</textarea>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label" for="file_attachment">File đính kèm:</label>
+                        @if (!string.IsNullOrEmpty(Model.LinkFiles))
+                        {
+                            <a href="@Url.Content("~/uploads/" + Model.LinkFiles)" download>@Model.LinkFiles</a>
+                        }
+                        <input id="file_attachment" class="form-control" type="file" name="file_attachment" value="@Model.LinkFiles">
+                    </div>
                     <div class="row">
                         <div class="col-12 col-xl-6">
                             <div class="form-group">
@@ -51,7 +59,7 @@
                                 <div class="input-group date">
                                     @if (Model.EndTime is DateTime endTime)
                                     {
-                                        <input type="date" id="start_date" value="@endTime.ToString("yyyy-MM-dd")" class="form-control datetimepicker-input">
+                                        <input type="date" id="end_date" value="@endTime.ToString("yyyy-MM-dd")" class="form-control datetimepicker-input">
                                     }
                                 </div>
                             </div>
@@ -151,7 +159,6 @@
                             <button type="submit" onclick="js_UpdateTask()" class="btn btn-primary float-right">Cập nhật</button>
                         </div>
                     </div>
-                </form>
             </div>
         </div>
     </div>

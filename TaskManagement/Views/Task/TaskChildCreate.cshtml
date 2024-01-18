@@ -10,101 +10,103 @@
                 <h5 class="card-title mb-0">Thêm mới công việc con</h5>
             </div>
             <div class="card-body">
-                <form id="validation-form">
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <input type="hidden" id="project_id" value="@ViewBag.project.Id" />
-                                <input type="hidden" id="task_parent_id" value="@ViewBag.taskParent.Id" />
-                                <input type="hidden" id="task_parent_code" value="@ViewBag.taskParent.TaskCode" />
-                                <label class="form-label" for="project">Công việc cha:</label>
-                                <input disabled type="text" class="form-control" id="task_parent_name" name="task_parent_name" value="@ViewBag.taskParent.TaskName">
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Tên công việc</label>
-                                <input type="text" class="form-control" id="task_name" name="task_name" placeholder="Nhập tên công việc">
-                            </div>
+                <div class="row">
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <input type="hidden" id="project_id" value="@ViewBag.project.Id" />
+                            <input type="hidden" id="task_parent_id" value="@ViewBag.taskParent.Id" />
+                            <input type="hidden" id="task_parent_code" value="@ViewBag.taskParent.TaskCode" />
+                            <label class="form-label" for="project">Công việc cha:</label>
+                            <input disabled type="text" class="form-control" id="task_parent_name" name="task_parent_name" value="@ViewBag.taskParent.TaskName">
                         </div>
                     </div>
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label">Tên công việc</label>
+                            <input type="text" class="form-control" id="task_name" name="task_name" placeholder="Nhập tên công việc">
+                        </div>
+                    </div>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Mô tả</label>
-                        <textarea rows="4" class="form-control" id="task_description" name="task_description" placeholder="Nhập mô tả chi tiết"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Thời gian bắt đẩu</label>
-                                <div class="input-group date">
-                                    <input type="date" id="start_date" class="form-control datetimepicker-input">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label">Thời gian kết thúc</label>
-                                <div class="input-group date">
-                                    <input type="date" id="end_date" class="form-control datetimepicker-input">
-                                </div>
+                <div class="form-group">
+                    <label class="form-label">Mô tả</label>
+                    <textarea rows="4" class="form-control" id="task_description" name="task_description" placeholder="Nhập mô tả chi tiết"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="file_attachment">File đính kèm:</label>
+                    <input id="file_attachment" class="form-control" type="file" name="file_attachment" value="">
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label">Thời gian bắt đẩu</label>
+                            <div class="input-group date">
+                                <input type="date" id="start_date" class="form-control datetimepicker-input">
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="estimate_time">Thời gian thực hiện(h):</label>
-                                <input type="number" min="0" class="form-control" id="estimate_time" name="estimate_time" placeholder="Nhập thời gian ước lượng">
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="department">Phòng ban thực hiện:</label>
-                                <input disabled type="text" class="form-control" value="@ViewBag.department.DepartmentName">
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label">Thời gian kết thúc</label>
+                            <div class="input-group date">
+                                <input type="date" id="end_date" class="form-control datetimepicker-input">
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="users">Nhân viên thực hiện:</label>
-                        <select class="form-control select2" id="users" data-toggle="select2" multiple="">
-                            <option value="">--Chọn nhân viên thực hiện--</option>
-                            @if (ViewBag.lstUsers != null)
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label" for="estimate_time">Thời gian thực hiện(h):</label>
+                            <input type="number" min="0" class="form-control" id="estimate_time" name="estimate_time" placeholder="Nhập thời gian ước lượng">
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label" for="department">Phòng ban thực hiện:</label>
+                            <input disabled type="text" class="form-control" value="@ViewBag.department.DepartmentName">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="users">Nhân viên thực hiện:</label>
+                    <select class="form-control select2" id="users" data-toggle="select2" multiple="">
+                        <option value="">--Chọn nhân viên thực hiện--</option>
+                        @if (ViewBag.lstUsers != null)
+                        {
+                            foreach (var item in ViewBag.lstUsers)
                             {
-                                foreach (var item in ViewBag.lstUsers)
-                                {
-                                    <option value="@item.UserCode">@item.UserName</option>
-                                }
+                                <option value="@item.UserCode">@item.UserName</option>
                             }
-                        </select>
+                        }
+                    </select>
 
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="priority_level">Mức độ quan trọng:</label>
-                                <select class="form-control select2" id="priority_level" data-toggle="select2">
-                                    <option value="">--Chọn mức độ--</option>
-                                    <option value="IMPORTANT">Quan trọng</option>
-                                    <option value="HIGH">Cao</option>
-                                    <option value="NORMAL">Bình thường</option>
-                                    <option value="LOW">Thấp</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                            <div class="form-group">
-                                <label class="form-label" for="department">Điểm số:</label>
-                                <input type="number" class="form-control" id="point" name="point" placeholder="Nhập điểm số">
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label" for="priority_level">Mức độ quan trọng:</label>
+                            <select class="form-control select2" id="priority_level" data-toggle="select2">
+                                <option value="">--Chọn mức độ--</option>
+                                <option value="IMPORTANT">Quan trọng</option>
+                                <option value="HIGH">Cao</option>
+                                <option value="NORMAL">Bình thường</option>
+                                <option value="LOW">Thấp</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="d-flex">
-                        <div class="w-100">
-                            <button type="submit" onclick="js_AddTaskChild()" class="btn btn-primary float-right">Tạo mới</button>
+                    <div class="col-12 col-xl-6">
+                        <div class="form-group">
+                            <label class="form-label" for="department">Điểm số:</label>
+                            <input type="number" class="form-control" id="point" name="point" placeholder="Nhập điểm số">
                         </div>
                     </div>
-                </form>
+                </div>
+                <div class="d-flex">
+                    <div class="w-100">
+                        <button type="submit" onclick="js_AddTaskChild()" class="btn btn-primary float-right">Tạo mới</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

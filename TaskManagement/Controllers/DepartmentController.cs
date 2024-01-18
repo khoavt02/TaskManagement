@@ -12,16 +12,19 @@ namespace TaskManagement.Controllers
 		private readonly TaskManagementContext _context;
 		private readonly ILogger _logger;
 		private readonly IHttpContextAccessor _contextAccessor;
-		public DepartmentController(TaskManagementContext context)
+		public DepartmentController(TaskManagementContext context, IHttpContextAccessor contextAccessor)
 		{
 			this._context = context;
-		}
+            this._contextAccessor = contextAccessor;
+        }
 		public IActionResult Index()
 		{
-			ViewBag.lstPositions = _context.Positons.ToList();
+            bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Department", "View");
+            if (!hasPermission) return RedirectToAction("Author", "Home");
+            ViewBag.lstPositions = _context.Positons.ToList();
 			ViewBag.lstDepartments = _context.Departments.ToList();
 			ViewBag.lstRoles = _context.RoleGroups.ToList();
-            ViewBag.lstUsers = _context.Users.ToList();
+            ViewBag.lstUsers = _context.Users.Where(x => x.PositionCode != "NV").ToList();
             return View();
 		}
 		[HttpPost]
@@ -32,7 +35,13 @@ namespace TaskManagement.Controllers
 				
 				if (model != null)
 				{
-					var department = new Department()
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Department", "Add");
+                    if (!hasPermission) return new JsonResult(new { status = false, message = "Bạn không có quyền tạo mới phòng ban!" });
+                    if (model["code"] == "" || model["name"] == "" || model["status"] == "" || model["management"] =="")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập đầy đủ thông tin!" });
+                    }
+                    var department = new Department()
 					{
 						DepartmentCode = model["code"],
 						DepartmentName = model["name"],
@@ -64,7 +73,13 @@ namespace TaskManagement.Controllers
 
 				if (model != null)
 				{
-					var department = _context.Departments.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
+                    if (model["code"] == "" || model["name"] == "" || model["status"] == "" || model["management"] == "")
+                    {
+                        return new JsonResult(new { status = false, message = "Vui lòng nhập đầy đủ thông tin!" });
+                    }
+                    bool hasPermission = AuthorizationHelper.CheckRole(this._contextAccessor, "Department", "Edit");
+                    if (!hasPermission) return new JsonResult(new { status = true, message = "Bạn không có quyền chỉnh sửa phòng ban!" });
+                    var department = _context.Departments.Where(x => x.Id == int.Parse(model["id"])).FirstOrDefault();
 					department.DepartmentCode = model["code"];
 					department.DepartmentName = model["name"];
 					department.Status = model["status"] == "1" ? true : false;

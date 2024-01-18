@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Thống kê công việc";
+}
+<h1 class="h3 mb-3">Thống kê công việc</h1>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Từ ngày</label>
+                            <div class="input-group date" id="datetimepicker-date-1" data-target-input="nearest">
+                                <input type="text" id="from-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-1">
+                                <div class="input-group-append" data-target="#datetimepicker-date-1" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="form-group">
+                            <label class="form-label">Đến ngày</label>
+                            <div class="input-group date" id="datetimepicker-date-2" data-target-input="nearest">
+                                <input type="text" id="to-date" class="form-control datetimepicker-input" data-target="#datetimepicker-date-2">
+                                <div class="input-group-append" data-target="#datetimepicker-date-2" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fas fa-fw fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <a class="btn btn-info mt-n1 text-white" onclick="js_GetList()" style="margin-top: 30px !important;"><i class="fas fa-search"></i> Tìm kiếm</a>
+                        <a id="exportButton" onclick="js_ExportExcel()" class="btn btn-success mt-n1 text-white" style="margin-top: 30px !important;"><i class="fas fa-document"></i> Xuất Excel</a>
+                    </div>
+
+                </div>
+                <table id="table-projects" class="table table-striped" style="width:100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/TaskStatistic.js"></script>
+
+

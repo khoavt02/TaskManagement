@@ -1,51 +1,107 @@
 ﻿$(function () {
-    $('#menu-dashboard').addClass("active");
-	new Chart(document.getElementById("chartjs-dashboard-bar-devices"), {
-		type: "bar",
-		data: {
-			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-			datasets: [{
-				label: "Mobile",
-				backgroundColor: window.theme.primary,
-				borderColor: window.theme.primary,
-				hoverBackgroundColor: window.theme.primary,
-				hoverBorderColor: window.theme.primary,
-				data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79]
-			}, {
-				label: "Desktop",
-				backgroundColor: "#E8EAED",
-				borderColor: "#E8EAED",
-				hoverBackgroundColor: "#E8EAED",
-				hoverBorderColor: "#E8EAED",
-				data: [69, 66, 24, 48, 52, 51, 44, 53, 62, 79, 51, 68]
-			}]
-		},
-		options: {
-			maintainAspectRatio: false,
-			legend: {
-				display: false
-			},
-			scales: {
-				yAxes: [{
-					gridLines: {
-						display: false
-					},
-					stacked: false,
-					ticks: {
-						stepSize: 20
-					}
-				}],
-				xAxes: [{
-					barPercentage: .75,
-					categoryPercentage: .5,
-					stacked: false,
-					gridLines: {
-						color: "transparent"
-					}
-				}]
-			}
-		}
-	});
+    $('#menu-dashboardss').addClass("active");
+    $.ajax({
+        url: '/Home/GetChartData',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            console.log(data.totalTasksByStatus);
+            data.totalTasksByStatus.forEach(function (task) {
+                switch (task.status) {
+                    case 'COMPLETE':
+                        $("#total-task-complete").html(task.totalTasks);
+                        $("#percent-task-complete").html(task.percentTask + "%");
+                        $('#progress-task-complete').css('width', task.percentTask + "%");
+                        break;
+                    case 'PROCESSING':
+                        $("#total-task-processing").html(task.totalTasks);
+                        $("#percent-task-processing").html(task.percentTask + "%");
+                        $('#progress-task-processing').css('width', task.percentTask + "%");
+                        break;
+                    case 'EVALUATE':
+                        $("#total-task-evaluated").html(task.totalTasks);
+                        $("#percent-task-evaluated").html(task.percentTask + "%");
+                        $('#progress-task-evaluated').css('width', task.percentTask + "%");
+                        break;
+                    case 'NEW':
+                        $("#total-task-new").html(task.totalTasks);
+                        $("#percent-task-new").html(task.percentTask + "%");
+                        $('#progress-task-new').css('width', task.percentTask + "%");
+                        break;
+                    default:
+                        break;
+                }
+            })
+            //var chart = new Chart(document.getElementById("chartjs-dashboard-bar-devices"), {
+            //    type: "bar",
+            //    data: {
+            //        labels: data.labels,
+            //        datasets: data.datasets
+            //    },
+            //    options: {
+            //        maintainAspectRatio: false,
+            //        legend: {
+            //            display: false
+            //        },
+            //        scales: {
+            //            yAxes: [{
+            //                gridLines: {
+            //                    display: false
+            //                },
+            //                stacked: false,
+            //                ticks: {
+            //                    stepSize: 20
+            //                }
+            //            }],
+            //            xAxes: [{
+            //                barPercentage: .75,
+            //                categoryPercentage: .5,
+            //                stacked: false,
+            //                gridLines: {
+            //                    color: "transparent"
+            //                }
+            //            }]
+            //        }
+            //    }
+            //});
+
+            new Chart(document.getElementById("chartjs-dashboard-bar-devices"), {
+                type: "bar",
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                display: false
+                            },
+                            stacked: false,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }],
+                        xAxes: [{
+                            barPercentage: .75,
+                            categoryPercentage: .5,
+                            stacked: false,
+                            gridLines: {
+                                color: "transparent"
+                            }
+                        }]
+                    }
+                }
+            });
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 });
 
 
