@@ -102,6 +102,8 @@ namespace TaskManagement.Controllers
                             // Lưu đường dẫn tệp vào thuộc tính FilePath của đối tượng TaskProgress
                             project.LinkFiles = filePath;
                         }
+                        _context.Add(project);
+                        _context.SaveChanges();
                         Notification notificationMa = new Notification()
                         {
                             Message = "Bạn được giao làm quản lý một dự án mới!",
@@ -111,7 +113,7 @@ namespace TaskManagement.Controllers
                             IsRead = false,
                         };
                         _context.Add(notificationMa);
-                        _context.Add(project);
+                       
 						//var userString = model["users"].ToString();
 						//string[] arrUser = userString.Split(',');
 						//foreach (var user in arrUser)

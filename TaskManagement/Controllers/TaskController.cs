@@ -165,7 +165,8 @@ namespace TaskManagement.Controllers
                             task.LinkFiles = filePath;
                         }
                         _context.Add(task);
-                        var userString = model["users"].ToString();
+                        _context.SaveChanges();
+                        var userString = model["assigned_user"].ToString();
                         string[] arrUser = userString.Split(',');
                         foreach (var user in arrUser)
                         {
@@ -181,7 +182,7 @@ namespace TaskManagement.Controllers
                             var hubConnections = _context.HubConnections.Where(con => con.Username == user).OrderByDescending(con => con.Id).FirstOrDefault();
                             if (hubConnections != null)
                             {
-                                await _hubContext.Clients.Client(hubConnections.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Bạn được thêm vào một dự án mới!");
+                                await _hubContext.Clients.Client(hubConnections.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Bạn được giao một công việc mới!");
                             }
                         }
                         UpdateProjectProgress(task.ProjectId);
@@ -356,7 +357,7 @@ namespace TaskManagement.Controllers
             }
         }
         [HttpPost]
-        public JsonResult UpdateTask(IFormCollection model)
+        public async Task<JsonResult> UpdateTaskAsync(IFormCollection model)
         {
             try
             {
@@ -398,7 +399,7 @@ namespace TaskManagement.Controllers
                         {
                             return new JsonResult(new { status = false, message = "Vui lòng chọn mức độ quan trọng của công việc!" });
                         }
-                        if(decimal.Parse(model["process"])>100 || decimal.Parse(model["process"]) < 0)
+                        if(decimal.Parse(model["proccess"])>100 || decimal.Parse(model["proccess"]) < 0)
                         {
                             return new JsonResult(new { status = false, message = "Phần trăm tiến độ phải lớn hơn 0 và nhỏ hơn 100!" });
                         }
@@ -434,12 +435,15 @@ namespace TaskManagement.Controllers
                             taskUpdate.AssignedUser = model["assigned_user"];
                             taskUpdate.Description = model["task_description"];
                             taskUpdate.Level = model["priority_level"];
-                            taskUpdate.Points = int.Parse(model["point"]);
-                            taskUpdate.ProcessPercent =  0;
+                            taskUpdate.Points = decimal.Parse(model["point"]);
                             taskUpdate.UpdateDate = DateTime.Now;
                             taskUpdate.UpdateBy = Request.Cookies["user_code"];
                             taskUpdate.Status = model["status"];
-                            taskUpdate.ProcessPercent = decimal.Parse(model["process"]);
+                            taskUpdate.ProcessPercent = decimal.Parse(model["proccess"]);
+                            if(taskUpdate.ProcessPercent == 100 || taskUpdate.Status == "COMPLETE")
+                            {
+                                taskUpdate.CompleteTime = DateTime.Now;
+                            }
                             var file = model.Files["file"];
                             if (file != null && file.Length > 0)
                             {
@@ -458,6 +462,20 @@ namespace TaskManagement.Controllers
                             _context.Update(taskUpdate);
                             UpdateParentTaskProgress(taskUpdate);
                             UpdateProjectProgress(taskUpdate.ProjectId);
+                            Notification notification = new Notification()
+                            {
+                                Message = "Công việc bạn quản lý có cập nhật mới!",
+                                Username = taskUpdate.CreatedBy,
+                                Link = "/Task/TaskDetail?id=" + taskUpdate.Id,
+                                NotificationDateTime = DateTime.Now,
+                                IsRead = false,
+                            };
+                            _context.Add(notification);
+                            var hubConnections = _context.HubConnections.Where(con => con.Username == taskUpdate.CreatedBy).OrderByDescending(con => con.Id).FirstOrDefault();
+                            if (hubConnections != null)
+                            {
+                                await _hubContext.Clients.Client(hubConnections.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Công việc bạn quản lý có cập nhật mới!");
+                            }
                             _context.SaveChanges();
                             return new JsonResult(new { status = true, message = "Cập nhật công việc thành công!" });
                         }
@@ -546,13 +564,13 @@ namespace TaskManagement.Controllers
         }
 
         [HttpPost]
-        public JsonResult AddProccessTask(IFormCollection model)
+        public async Task<JsonResult> AddProccessTaskAsync(IFormCollection model)
         {
             try
             {
                 if (model != null)
                 {
-                    if (decimal.Parse(model["process"]) > 100 || decimal.Parse(model["process"]) < 0)
+                    if (decimal.Parse(model["proccess"]) > 100 || decimal.Parse(model["proccess"]) < 0)
                     {
                         return new JsonResult(new { status = false, message = "Phần trăm tiến độ phải lớn hơn 0 và nhỏ hơn 100!" });
                     }
@@ -606,6 +624,20 @@ namespace TaskManagement.Controllers
                     UpdateParentTaskProgress(task);
                     UpdateProjectProgress(task.ProjectId);
                     _context.Add(taskProccess);
+                    Notification notification = new Notification()
+                    {
+                        Message = "Công việc bạn quản lý có cập nhật tiến độ mới!",
+                        Username = task.CreatedBy,
+                        Link = "/Task/TaskDetail?id=" + task.Id,
+                        NotificationDateTime = DateTime.Now,
+                        IsRead = false,
+                    };
+                    _context.Add(notification);
+                    var hubConnections = _context.HubConnections.Where(con => con.Username == task.CreatedBy).OrderByDescending(con => con.Id).FirstOrDefault();
+                    if (hubConnections != null)
+                    {
+                        await _hubContext.Clients.Client(hubConnections.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Công việc bạn quản lý có cập nhật tiến độ mới!");
+                    }
                     _context.SaveChanges();
                     return new JsonResult(new { status = true, message = "Thêm mới tiến độ thành công!" });
                 }
@@ -638,7 +670,7 @@ namespace TaskManagement.Controllers
 			return File(fileBytes, "text/plain", fileName);
 		}
 		[HttpPost]
-        public JsonResult AddReviewTask(IFormCollection model)
+        public async Task<JsonResult> AddReviewTaskAsync(IFormCollection model)
         {
             try
             {
@@ -659,6 +691,26 @@ namespace TaskManagement.Controllers
                     task.Status = "EVALUATE";
                     _context.Update(task);
                     _context.Add(taskEvualate);
+                    _context.SaveChanges();
+                    var userString = task.AssignedUser;
+                    string[] arrUser = userString.Split(',');
+                    foreach (var user in arrUser)
+                    {
+                        Notification notification = new Notification()
+                        {
+                            Message = "Bạn có một công việc được đánh giá!",
+                            Username = user,
+                            Link = "/Task/ListTaskUser",
+                            NotificationDateTime = DateTime.Now,
+                            IsRead = false,
+                        };
+                        _context.Add(notification);
+                        var hubConnections = _context.HubConnections.Where(con => con.Username == user).OrderByDescending(con => con.Id).FirstOrDefault();
+                        if (hubConnections != null)
+                        {
+                            await _hubContext.Clients.Client(hubConnections.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Bạn có một công việc được đánh giá!");
+                        }
+                    }
                     _context.SaveChanges();
                     return new JsonResult(new { status = true, message = "Đánh giá thành công!" });
                 }
@@ -1691,7 +1743,7 @@ namespace TaskManagement.Controllers
         }
 
         [HttpPost]
-        public JsonResult UpdateTaskStatus(IFormCollection model)
+        public async Task<JsonResult> UpdateTaskStatusAsync(IFormCollection model)
         {
             try
             {
@@ -1719,7 +1771,24 @@ namespace TaskManagement.Controllers
                         _context.Update(task);
                         UpdateParentTaskProgress(task);
                         UpdateProjectProgress(task.ProjectId);
+                            Notification notification = new Notification()
+                            {
+                                Message = "Công việc bạn quản lý có cập nhật tiến độ mới!",
+                                Username = task.CreatedBy,
+                                Link = "/Task/TaskDetail?id=" + task.Id,
+                                NotificationDateTime = DateTime.Now,
+                                IsRead = false,
+                            };
+                            _context.Add(notification);
+                            var hubConnections = _context.HubConnections.Where(con => con.Username == task.CreatedBy).OrderByDescending(con => con.Id).FirstOrDefault();
+                            if (hubConnections != null)
+                            {
+                                await _hubContext.Clients.Client(hubConnections.ConnectionId).SendAsync("ReceivedPersonalNotification", "Thông báo", "Công việc bạn quản lý có cập nhật tiến độ mới!");
+                            }
                         _context.SaveChanges();
+                        var userString = model["assigned_user"].ToString();
+                        string[] arrUser = userString.Split(',');
+                        
                         return new JsonResult(new { status = true, message = "Cập nhật trạng thái công việc thành công!" });
                     }
                     else

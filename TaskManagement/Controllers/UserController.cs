@@ -40,7 +40,15 @@ namespace TaskManagement.Controllers
 					{
 						return new JsonResult(new { status = false, message = "Vui lòng nhập mã nhân viên và tên nhân viên!" });
 					}
-					if (model["account"] == "" || model["password"] == "")
+                    if (_context.Users.Any(u => u.UserCode == model["code"].ToString()))
+                    {
+                        return new JsonResult(new { status = false, message = "Mã nhân viên đã tồn tại. Vui lòng chọn một mã khác!" });
+                    }
+                    if (_context.Users.Any(u => u.Account == model["account"].ToString()))
+                    {
+                        return new JsonResult(new { status = false, message = "Tài khoản đã tồn tại. Vui lòng chọn một tài khoản khác!" });
+                    }
+                    if (model["account"] == "" || model["password"] == "")
                     {
                         return new JsonResult(new { status = false, message = "Vui lòng nhập tài khoản và mật khẩu cho nhân viên!" });
                     }

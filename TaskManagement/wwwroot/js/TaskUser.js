@@ -339,15 +339,16 @@ function js_GetList() {
                     var currentDate = new Date();
                     //currentDate.setDate(currentDate.getDate() + 1);
                     var formattedDate = currentDate.toISOString().split('T')[0] + 'T00:00:00';
-                    console.log(formattedDate);
-
+                    var inputDate = new Date(row.completeTime);
+                    inputDate.setHours(0, 0, 0, 0);
+                    var comDate = inputDate.toISOString().split('T')[0] + 'T00:00:00';
+                    console.log(formattedDate, row.endTime, row.completeTime, comDate);
                     var html = "";
-                    console.log( row.startTime, row.endTime, row.completeTime);
-                    if ((row.status == "COMPLETE" || row.status == "EVALUATE") && row.completeTime <= row.endTime) {
+                    if ((row.status == "COMPLETE" || row.status == "EVALUATE") && comDate <= row.endTime) {
                         html += "<span class= 'badge badge-pill badge-success'>Hoàn thành</span>";
                     } else if (row.status != "COMPLETE" && row.status != "EVALUATE" && (row.endTime < formattedDate)) {
                         html += "<span class= 'badge badge-pill badge-danger'>Trễ hạn</span>";
-                    } else if ((row.status == "COMPLETE" || row.status == "EVALUATE") && row.completeTime >= row.endTime) {
+                    } else if ((row.status == "COMPLETE" || row.status == "EVALUATE") && comDate > row.endTime) {
                         html += "<span class= 'badge badge-pill badge-secondary'>Hoàn thành trễ</span>";
                     } else {
                         html += "<span class= 'badge badge-pill badge-primary'>Đang thực hiện</span>";

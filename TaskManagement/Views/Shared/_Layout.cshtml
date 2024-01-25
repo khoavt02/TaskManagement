@@ -192,7 +192,7 @@
                                 <img src="~/img/avatars/avatar.jpg" class="avatar img-fluid rounded-circle mr-1" alt="Chris Wood"> <span class="text-dark">@HttpContextAccessor.HttpContext?.Session.GetString("Username")</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="pages-profile.html"><i class="align-middle mr-1" data-feather="user"></i> Thông tin</a>
+                                @* <a class="dropdown-item" href="pages-profile.html"><i class="align-middle mr-1" data-feather="user"></i> Thông tin</a> *@
                                 <a class="dropdown-item" href="/Login/ChangePassword"><i class="align-middle mr-1" data-feather="pie-chart"></i> Đổi mật khẩu</a>
                                 <div class="dropdown-divider"></div>
                                 <form method="post" asp-controller="Login" asp-action="Logout">

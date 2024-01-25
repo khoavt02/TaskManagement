@@ -23,6 +23,9 @@ function OnConnected() {
 connection.on("ReceivedPersonalNotification", function (title, message) {
     console.log(message);
     DisplayPersonalNotification(title, message);
+    setTimeout(function () {
+        getListNotificationByUser();
+    }, 5000);
 });
 function formatDateTime(dateTimeString) {
     const options = {
